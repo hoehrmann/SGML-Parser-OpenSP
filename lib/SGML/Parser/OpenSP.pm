@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.19 2004/10/01 16:35:26 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.20 2004/10/01 22:14:58 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -837,8 +837,6 @@ to process C<example.xhtml> using the C<UTF-8> character encoding.
 OpenSP must be compiled with C<SP_MULTI_BYTE> I<defined> and with
 C<SP_WIDE_SYSTEM> I<undefined>, this module will otherwise break
 at runtime or not compile.
-
-The typemap is crap.
 
 =head1 BUG REPORTS
 
