@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.6 2004/09/04 17:04:22 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.7 2004/09/08 19:36:04 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
@@ -585,7 +585,11 @@ void SgmlParserOpenSP::parse_file(SV* file_sv)
 
     char* file = SvPV_nolen(file_sv);
 
+#ifndef SP_WIDE_SYSTEM
     EventGenerator* egp = pk.makeEventGenerator(1, &file);
+#else
+    croak("SP_WIDE_SYSTEM is not supported\n");
+#endif
 
     egp->inhibitMessages(true);
 
