@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+OpenSP.xs
+README
+typemap
+t/SGML-Parser-OpenSP.t
+lib/SGML/Parser/OpenSP.pm

@@ -1,0 +1,27 @@
+SGML-Parser-OpenSP version 0.02
+===============================
+
+This module provides an interface to the OpenSP SGML parser.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  Perl 5.8.0 or later
+  Class::Accesor
+  The OpenSP library, see http://openajde.sf.net/ 
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2004 by Bjoern Hoehrmann <bjoern@hoehrmann.de>
+
+This module is licensed under the same terms as Perl itself.
