@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.9 2004/09/09 04:10:39 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.10 2004/09/13 16:37:07 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
@@ -28,6 +28,7 @@ public:
     SgmlParserOpenSP();
     void parse_file(SV* file_sv);
     SV* get_location();
+    void halt();
 
     SV* m_self;
 
@@ -64,6 +65,7 @@ private:
     bool m_parsing;
     SGMLApplication::Position      m_pos;
     SGMLApplication::OpenEntityPtr m_openEntityPtr;
+    EventGenerator* m_egp;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -469,6 +471,7 @@ SgmlParserOpenSP::SgmlParserOpenSP()
     m_handler       = NULL;
     m_self          = NULL;
     m_pos           = 0;
+    m_egp           = NULL;
 }
 
 SV* SgmlParserOpenSP::get_location()
@@ -479,6 +482,17 @@ SV* SgmlParserOpenSP::get_location()
     SGMLApplication::Location l(m_openEntityPtr, m_pos);
 
     return newRV_noinc((SV*)_location2hv(l));
+}
+
+void SgmlParserOpenSP::halt()
+{
+    if (!m_parsing)
+        croak("halt() must be called from event handlers\n");
+
+    if (!m_egp)
+        croak("egp not available, object corrupted\n");
+
+    m_egp->halt();
 }
 
 bool SgmlParserOpenSP::handler_can(char* method)
@@ -511,7 +525,18 @@ void SgmlParserOpenSP::dispatchEvent(char* name, HV* hv)
     XPUSHs(hv ? sv_2mortal(newRV_noinc((SV*)hv)) : &PL_sv_undef);
     PUTBACK;
 
-    call_method(name, G_DISCARD | G_SCALAR);
+    // call the callback method; should this use G_KEEPER?
+    call_method(name, G_DISCARD | G_SCALAR | G_EVAL);
+
+    // Refetch the stack pointer.
+    SPAGAIN;
+
+    // graceful recovery
+    if (SvTRUE(ERRSV))
+    {
+        m_egp->halt();
+        POPs;
+    }
 }
 
 void SgmlParserOpenSP::parse_file(SV* file_sv)
@@ -588,21 +613,31 @@ void SgmlParserOpenSP::parse_file(SV* file_sv)
     char* file = SvPV_nolen(file_sv);
 
 #ifndef SP_WIDE_SYSTEM
-    EventGenerator* egp = pk.makeEventGenerator(1, &file);
+    m_egp = pk.makeEventGenerator(1, &file);
 #else
     croak("SP_WIDE_SYSTEM is not supported\n");
 #endif
 
-    egp->inhibitMessages(true);
+    m_egp->inhibitMessages(true);
 
     m_parsing = true;
-    egp->run(*this);
+    m_egp->run(*this);
     m_parsing = false;
 
     // all entities closed now
     m_openEntityPtr = NULL;
 
-    delete egp;
+    delete m_egp;
+
+    // no longer valid
+    m_egp = NULL;
+
+    // After graceful recovery croak here to propagate the exception to
+    // the caller. I am not sure how useful this behavior actually is,
+    // but it's better than silently ignoring the error or to croak
+    // before this point as the object would be unusable and leak memory.
+    if (SvTRUE(ERRSV))
+        croak(Nullch);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1073,3 +1108,6 @@ SgmlParserOpenSP::parse_file(SV* file_sv)
 
 SV*
 SgmlParserOpenSP::get_location()
+
+void
+SgmlParserOpenSP::halt()
