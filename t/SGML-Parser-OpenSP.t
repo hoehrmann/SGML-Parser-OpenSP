@@ -1,10 +1,10 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.11 2004/09/13 05:40:50 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.12 2004/09/14 07:57:56 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 180;
+use Test::More tests => 187;
 use Test::Exception;
 use Encode qw();
 use File::Spec qw();
@@ -529,12 +529,6 @@ ok($h11->{ok5}, 'proper root element');
 $p->catalogs([]);
 
 #########################################################
-## show_error_numbers
-#########################################################
-
-# ...
-
-#########################################################
 ## SGML::Parser::OpenSP::Tools
 #########################################################
 
@@ -619,6 +613,76 @@ ok($h12->{ok8}, 'correct text 131');
 
 $p->catalogs([]);
 $p->show_error_numbers(0);
+
+#########################################################
+## normal halt
+#########################################################
+
+sub TestHandler13::new{bless{p=>$_[1],ok1=>0,ok2=>0},shift}
+sub TestHandler13::start_element
+{
+    my $s = shift;
+    my $e = shift;
+    my $o = $s->{p};
+
+    return unless defined $s;
+    return unless defined $e;
+    return unless defined $o;
+    
+    $s->{ok1}++;
+    $o->halt;
+}
+sub TestHandler13::end_element
+{
+    my $s = shift;
+    $s->{ok2}--;
+}
+
+my $h13 = TestHandler13->new($p);
+$p->handler($h13);
+
+lives_ok { $p->parse_file(NO_DOCTYPE); }
+  'normal halt';
+
+ok($h13->{ok1}, 'halt handler called');
+is($h13->{ok2}, 0, 'halt stops events');
+
+#########################################################
+## halt via die in handler
+#########################################################
+
+sub TestHandler14::new{bless{ok1=>0,ok2=>0},shift}
+sub TestHandler14::start_element
+{
+    my $s = shift;
+    my $e = shift;
+    return unless defined $s and defined $e;
+    $s->{ok1}++;
+    
+    die "SUCKS!"
+}
+sub TestHandler14::end_element
+{
+    my $s = shift;
+    my $e = shift;
+    return unless defined $s and defined $e;
+    $s->{ok2}--;
+}
+
+my $h14 = TestHandler14->new;
+
+$p->handler($h14);
+
+throws_ok { $p->parse_file(NO_DOCTYPE) } qr/SUCKS!/,
+  'die in handler propagates';
+
+ok($h14->{ok1});
+is($h14->{ok2}, 0, 'die in handler halts');
+
+$p->handler(bless{},'NullHandler');
+
+lives_ok { $p->parse_file(NO_DOCTYPE) }
+  'object still usable after die in handler';
 
 #########################################################
 ## Parser refcounting
