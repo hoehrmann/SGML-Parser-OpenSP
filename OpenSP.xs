@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.23 2004/10/01 22:26:18 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.24 2004/10/01 22:31:02 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -68,7 +68,6 @@ private:
     void openEntityChange      (const OpenEntityPtr&              p);
 
     // ...
-    void updatePosition        (const SGMLApplication::Position   pos);
     void dispatchEvent         (const char*                       name,
                                 const HV* hv);
     bool handler_can           (const char*                       method);
@@ -695,10 +694,7 @@ void SgmlParserOpenSP::parse(SV* file_sv)
 // OpenSP event handler
 ///////////////////////////////////////////////////////////////////////////
 
-void SgmlParserOpenSP::updatePosition(const SGMLApplication::Position pos)
-{
-    m_pos = pos;
-}
+#define updatePosition(pos) m_pos = pos
 
 ///////////////////////////////////////////////////////////////////////////
 // SgmlParserOpenSP::appinfo
