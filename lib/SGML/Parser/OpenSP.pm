@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.3 2004/09/04 16:56:22 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.4 2004/09/04 17:04:22 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -17,6 +17,7 @@ __PACKAGE__->mk_accessors(qw/
     handler
     show_open_entities
     show_open_elements
+    show_error_numbers
     output_comment_decls
     output_marked_sections
     output_general_entities
@@ -79,6 +80,10 @@ false.
 
 Show the generic identifiers of open elements in error messages.
 The default is false.
+
+=itm $p->show_error_numbers([$bool])
+
+Show message numbers in error messages.
 
 =item $p->output_comment_decls([$bool])
 
@@ -361,10 +366,6 @@ a hash reference with the following properties:
 These can be C<undef> or an empty string.
 
 =head1 KNOWN ISSUES
-
-OpenSP 1.5.1 should not be used in combination with this module as
-it has two major memory leaks which might cause this module to use
-all available memory after some time.
 
 OpenSP must be compiled with C<SP_MULTI_BYTE> I<defined> and with
 C<SP_WIDE_SYSTEM> I<undefined>, this module will otherwise break

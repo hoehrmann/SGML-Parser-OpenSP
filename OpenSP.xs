@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.5 2004/09/04 16:56:54 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.6 2004/09/04 17:04:22 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
@@ -548,6 +548,9 @@ void SgmlParserOpenSP::parse_file(SV* file_sv)
 
     if (_hv_fetch_SvTRUE(hv, "show_open_elements", 18))
         pk.setOption(ParserEventGeneratorKit::Option::showOpenElements);
+
+    if (_hv_fetch_SvTRUE(hv, "show_error_numbers", 18))
+        pk.setOption(ParserEventGeneratorKit::Option::showErrorNumbers);
 
     if (_hv_fetch_SvTRUE(hv, "output_comment_decls", 20))
         pk.setOption(ParserEventGeneratorKit::Option::outputCommentDecls);
