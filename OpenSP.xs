@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.20 2004/09/24 01:16:23 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.21 2004/09/24 10:57:12 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -8,6 +8,8 @@
 #endif
 
 #define PERL_NO_GET_CONTEXT
+
+#define SPO_SMALL_STRINGS_LENGTH 1024
 
 extern "C"
 {
@@ -96,6 +98,9 @@ private:
 
     // ...
     PerlInterpreter*               my_perl;
+
+    // ...
+    U8 m_temp[SPO_SMALL_STRINGS_LENGTH * UTF8_MAXLEN + 1];
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -149,19 +154,30 @@ static U32 HvvType;
 
 SV* SgmlParserOpenSP::_cs2sv(const SGMLApplication::CharString s)
 {
-    SV* result = newSVpvn("", 0);
+    SV* result;
     unsigned int i = 0;
     U8* d;
 
-    SvUTF8_on(result);
-    
-    for (i = 0; i < s.len; ++i)
+    // optimized memory-intensive version for small strings
+    if (s.len < SPO_SMALL_STRINGS_LENGTH)
     {
-        d = (U8 *)SvGROW(result, SvCUR(result) + UTF8_MAXLEN + 1);
-        d = uvuni_to_utf8_flags(d + SvCUR(result), s.ptr[i], 0); 
-        SvCUR_set(result, d - (U8 *)SvPVX(result));
+        d = m_temp;
+        for (i = 0; i < s.len; ++i)
+            d = uvuni_to_utf8_flags(d, s.ptr[i], 0);
+        result = newSVpvn((const char*)m_temp, d - m_temp);
+    }
+    else
+    {
+        result = newSVpvn("", 0);
+        for (i = 0; i < s.len; ++i)
+        {
+            d = (U8 *)SvGROW(result, SvCUR(result) + UTF8_MAXLEN + 1);
+            d = uvuni_to_utf8_flags(d + SvCUR(result), s.ptr[i], 0); 
+            SvCUR_set(result, d - (U8 *)SvPVX(result));
+        }
     }
 
+    SvUTF8_on(result);
     return result;
 }
 
