@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.16 2004/09/22 18:28:02 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.17 2004/09/23 10:07:40 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -121,14 +121,16 @@ Generate C<general_entity> events. The default is false.
 
 =item $p->map_catalog_document([$bool])
 
-???
+C<parse> arguments specify catalog files rather than the document entity.
+The document entity is specified by the first DOCUMENT entry in the catalog
+files. The default is false.
 
 =item $p->restrict_file_reading([$bool])
 
-Restrict file reading to the specified directories.
-The default is false.
-
-@@state where this is specified.
+Restrict file reading to the specified directories (see the C<search_dirs>
+method and the C<SGML_SEARCH_PATH> environment variable). You should turn
+this option on and configure the search paths accordingly if you intend to
+process untrusted resources. The default is false.
 
 =back
 
@@ -288,6 +290,218 @@ ATTLIST YES ELEMENT YES>. An option of C<valid> has the effect of changing
 the SGML declaration to specify C<VALIDITY TYPE> and C<IMPLYDEF ATTLIST NO
 ELEMENT NO>. If neither C<valid> nor C<no-valid> are specified, then the
 C<VALIDITY> and C<IMPLYDEF> specified in the SGML declaration will be used. 
+
+=back
+
+=head2 XML WARNINGS
+
+The following warnings are turned on for the C<xml> warning described above:
+
+=over 4
+
+=item inclusion 
+
+Warn about inclusions in element type declarations. 
+
+=item exclusion 
+
+Warn about exclusions in element type declarations. 
+
+=item rcdata-content 
+
+Warn about RCDATA declared content in element type declarations. 
+
+=item cdata-content 
+
+Warn about CDATA declared content in element type declarations. 
+
+=item ps-comment 
+
+Warn about comments in parameter separators. 
+
+=item attlist-group-decl 
+
+Warn about name groups in attribute declarations. 
+
+=item element-group-decl 
+
+Warn about name groups in element type declarations. 
+
+=item pi-entity 
+
+Warn about PI entities. 
+
+=item internal-sdata-entity 
+
+Warn about internal SDATA entities. 
+
+=item internal-cdata-entity 
+
+Warn about internal CDATA entities. 
+
+=item external-sdata-entity 
+
+Warn about external SDATA entities. 
+
+=item external-cdata-entity 
+
+Warn about external CDATA entities. 
+
+=item bracket-entity 
+
+Warn about bracketed text entities. 
+
+=item data-atts 
+
+Warn about attribute definition list declarations for notations. 
+
+=item missing-system-id 
+
+Warn about external identifiers without system identifiers. 
+
+=item conref 
+
+Warn about content reference attributes. 
+
+=item current 
+
+Warn about current attributes. 
+
+=item nutoken-decl-value 
+
+Warn about attributes with a declared value of NUTOKEN or NUTOKENS. 
+
+=item number-decl-value 
+
+Warn about attributes with a declared value of NUMBER or NUMBERS. 
+
+=item name-decl-value 
+
+Warn about attributes with a declared value of NAME or NAMES. 
+
+=item named-char-ref 
+
+Warn about named character references. 
+
+=item refc 
+
+Warn about ommitted refc delimiters. 
+
+=item temp-ms 
+
+Warn about TEMP marked sections. 
+
+=item rcdata-ms 
+
+Warn about RCDATA marked sections. 
+
+=item instance-include-ms 
+
+Warn about INCLUDE marked sections in the document instance. 
+
+=item instance-ignore-ms 
+
+Warn about IGNORE marked sections in the document instance. 
+
+=item and-group 
+
+Warn about AND connectors in model groups. 
+
+=item rank 
+
+Warn about ranked elements. 
+
+=item empty-comment-decl 
+
+Warn about empty comment declarations. 
+
+=item att-value-not-literal 
+
+Warn about attribute values which are not literals. 
+
+=item missing-att-name 
+
+Warn about ommitted attribute names in start tags. 
+
+=item comment-decl-s 
+
+Warn about spaces before the MDC in comment declarations. 
+
+=item comment-decl-multiple 
+
+Warn about comment declarations containing multiple comments. 
+
+=item missing-status-keyword 
+
+Warn about marked sections without a status keyword. 
+
+=item multiple-status-keyword 
+
+Warn about marked sections with multiple status keywords. 
+
+=item instance-param-entity 
+
+Warn about parameter entities in the document instance. 
+
+=item min-param 
+
+Warn about minimization parameters in element type declarations. 
+
+=item mixed-content-xml 
+
+Warn about cases of mixed content which are not allowed in XML. 
+
+=item name-group-not-or 
+
+Warn about name groups with a connector different from OR. 
+
+=item pi-missing-name 
+
+Warn about processing instructions which don't start with a name. 
+
+=item instance-status-keyword-s 
+
+Warn about spaces between DSO and status keyword in marked sections. 
+
+=item external-data-entity-ref 
+
+Warn about references to external data entities in the content. 
+
+=item att-value-external-entity-ref 
+
+Warn about references to external data entities in attribute values. 
+
+=item data-delim 
+
+Warn about occurances of `<' and `&' as data. 
+
+=item explicit-sgml-decl 
+
+Warn about an explicit SGML declaration. 
+
+=item internal-subset-ms 
+
+Warn about marked sections in the internal subset. 
+
+=item default-entity 
+
+Warn about a default entity declaration. 
+
+=item non-sgml-char-ref 
+
+Warn about numeric character references to non-SGML characters. 
+
+=item internal-subset-ps-param-entity 
+
+Warn about parameter entity references in parameter separators in the internal subset. 
+
+=item internal-subset-ts-param-entity 
+
+Warn about parameter entity references in token separators in the internal subset. 
+
+=item internal-subset-literal-param-entity 
+
+Warn about parameter entity references in parameter literals in the internal subset. 
 
 =back
 
@@ -476,8 +690,6 @@ to process C<example.xhtml> using the C<UTF-8> character encoding.
 OpenSP must be compiled with C<SP_MULTI_BYTE> I<defined> and with
 C<SP_WIDE_SYSTEM> I<undefined>, this module will otherwise break
 at runtime or not compile.
-
-Individual warnings for -wxml are not listed in this POD.
 
 The typemap is crap.
 

@@ -1,5 +1,10 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
+0.98  ...
+	- updated map_catalog_document documentation
+	- updated restrict_file_reading documentation
+	- included -wxml warnings in the OpenSP.pm POD
+
 0.02  Wed Aug 25 00:49:11 2004
 	- complete rewrite; created by h2xs 1.23 with options
 		-A -O -c -n SGML::Parser::OpenSP --skip-ppport --skip-exporter -v 0.02 -b 5.8.0
