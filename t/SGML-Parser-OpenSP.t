@@ -1,10 +1,10 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.7 2004/09/11 07:55:08 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.8 2004/09/11 08:54:44 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 146;
+use Test::More tests => 157;
 use Test::Exception;
 use Encode qw();
 use File::Spec qw();
@@ -109,6 +109,9 @@ sub TestHandler1::start_element {
     # Included
     ok(exists $_[1]->{Included}, 'has included property');
     is($_[1]->{Included}, 0, 'included is 0');
+    
+    # ContentType
+    ok(exists $_[1]->{ContentType}, 'has ContentType property');
 }
 
 my $h1 = TestHandler1->new;
@@ -360,16 +363,48 @@ $p->restrict_file_reading(0);
 ## parse_file from handler
 #########################################################
 
+sub TestHandler9::new{bless{p=>$_[1]},shift}
+sub TestHandler9::start_element{shift->{p}->parse_file(NO_DOCTYPE)}
 
+my $h9 = TestHandler9->new;
+$p->handler($h9);
+
+dies_ok { $p->parse_file(NO_DOCTYPE) }
+  'parse_file must not be called from handler';
+
+#########################################################
+## non-scalar to parse_file
+#########################################################
+
+sub TestHandler10::new{bless{},shift}
+
+my $h10 = TestHandler10->new;
+$p->handler($h10);
+
+dies_ok { $p->parse_file({}) }
+  'non-scalar to parse_file';
+
+dies_ok { $p->parse_file([]) }
+  'non-scalar to parse_file';
+
+ok(open(F, '<', NO_DOCTYPE), 'can open no-doctype.xml');
+
+dies_ok { $p->parse_file(\*F) }
+  'file handle to parse_file';
+
+ok(close(F), 'can close no-doctype.xml');
 
 #########################################################
 ## show_error_numbers
 #########################################################
 
-
 #########################################################
 ## SGML::Parser::OpenSP::Tools
 #########################################################
+
+ok(!$p->show_error_numbers, 'show_error_numbers turned off');
+ok(!$p->show_open_entities, 'show_open_entities turned off');
+ok(!$p->show_open_elements, 'show_open_elements turned off');
 
 #########################################################
 ## newlines in enum attribute
@@ -382,6 +417,5 @@ __END__
 
 Todo:
 
-  * must die when parse_file called from handler
   * need to fix some tests so that handler don't ok()
 
