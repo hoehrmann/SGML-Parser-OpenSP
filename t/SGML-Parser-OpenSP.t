@@ -1,19 +1,19 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl SGML-Parser-OpenSP.t'
+# SGML-Parser-OpenSP.t -- ... 
+#
+# $Id: SGML-Parser-OpenSP.t,v 1.4 2004/09/10 05:13:21 hoehrmann Exp $
 
-#########################
-
-# change 'tests => 1' to 'tests => last_test_to_print';
-
-use Test::More tests => 8;
+use strict;
+use warnings;
+use Test::More tests => 12;
 use Test::Exception;
 
+use constant NO_DOCTYPE => 'samples/no-doctype.xml';
+
+#########################################################
+## Basic Tests
+#########################################################
+
 BEGIN { use_ok('SGML::Parser::OpenSP') };
-
-#########################
-
-# Insert your test code below, the Test::More module is use()ed here so read
-# its man page ( perldoc Test::More ) for help writing this test script.
 
 require_ok('SGML::Parser::OpenSP');
 
@@ -37,8 +37,14 @@ can_ok($p, qw/
     include_params
     active_links
 
+    parse_file
+
     split_message
 /);
+
+#########################################################
+## XS integrity
+#########################################################
 
 ok(exists $p->{__o},
   "pointer to C++ object");
@@ -46,20 +52,41 @@ ok(exists $p->{__o},
 isnt($p->{__o}, 0,
   "C++ object pointer not null-pointer");
 
+#########################################################
+## Exceptions
+#########################################################
+
 dies_ok { $p->get_location }
   'must die when calling get_location while not parsing';
 
-dies_ok { $p->parse_file() }
+dies_ok { $p->parse_file }
   'must die when no file name specified for parse_file';
 
+dies_ok { $p->parse_file(NO_DOCTYPE) }
+  'must die when no handler specified';
 
+#########################################################
+## Accessors
+#########################################################
+
+$p->handler(7);
+
+is($p->handler, 7, 'accessor');
+
+#########################################################
+## More Exceptions
+#########################################################
+
+dies_ok { $p->parse_file(NO_DOCTYPE) }
+  'must die when handler not an object';
+
+$p->handler(bless{}, 'NullHandler');
+
+lives_ok { $p->parse_file(NO_DOCTYPE) }
+  'must not die when handler cannot handle a method';
 
 __END__
 
 Todo:
 
-  * must not die when handler cannot handle a method
-  * must die when no file name specified for parse_file
-  * must die when no handler specified
   * must die when parse_file called from handler
-  * must die when handler not an object
