@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.12 2004/09/13 17:28:54 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.13 2004/09/14 06:29:39 hoehrmann Exp $
 
 // todo: add THX stuff?
 
@@ -1039,7 +1039,7 @@ void SgmlParserOpenSP::ignoredChars(const IgnoredCharsEvent& e)
 
     hv_store(hv, "Data", 4, _cs2sv(e.data), HvvData);
 
-    dispatchEvent("ignoredChars", hv);
+    dispatchEvent("ignored_chars", hv);
 }
 
 ///////////////////////////////////////////////////////////////////////////
