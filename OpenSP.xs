@@ -1,11 +1,9 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.10 2004/09/13 16:37:07 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.11 2004/09/13 17:07:58 hoehrmann Exp $
 
 // todo: add THX stuff?
-// todo: implement halt()?
 // todo: add const to const things
-// todo: PROTOTYPES
 
 extern "C"
 {
@@ -1099,6 +1097,8 @@ void SgmlParserOpenSP::openEntityChange(const OpenEntityPtr& p)
 ///////////////////////////////////////////////////////////////////////////
 
 MODULE = SGML::Parser::OpenSP       PACKAGE = SGML::Parser::OpenSP      
+
+PROTOTYPES: DISABLE
 
 SgmlParserOpenSP*
 SgmlParserOpenSP::new()
