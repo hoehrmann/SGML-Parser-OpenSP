@@ -1,6 +1,6 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.4 2004/09/09 23:26:35 hoehrmann Exp $
+# $Id: Tools.pm,v 1.5 2004/09/09 23:53:13 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
@@ -268,7 +268,9 @@ It returns a hash reference like
   # iff $p->show_open_elements(1) and there are open elements
   open_elements => 'html body[1] (p[1])',
 
-  # iff $p->show_open_entities(1) and there are open elements
+  # iff $p->show_open_entities(1) and there are open entities
+  # other than the document, but the document will be reported
+  # if the error is in some other entity
   open_entities => [
   {
     ColumnNumber => 55,
