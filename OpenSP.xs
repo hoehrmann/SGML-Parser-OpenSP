@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.17 2004/09/24 00:27:02 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.18 2004/09/24 00:57:22 hoehrmann Exp $
 
 // todo: add THX stuff?
 
@@ -76,10 +76,10 @@ private:
     HV* _entity2hv     (const SGMLApplication::Entity e);
     HV* _attributes2hv (const SGMLApplication::Attribute* attrs, const size_t n);
     HV* _attribute2hv  (const SGMLApplication::Attribute a);
-    bool SgmlParserOpenSP::_hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen);
-    void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
-                            ParserEventGeneratorKit& pk,
-                            const enum ParserEventGeneratorKit::OptionWithArg o);
+    bool _hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen);
+    void _hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
+                                ParserEventGeneratorKit& pk,
+                                const enum ParserEventGeneratorKit::OptionWithArg o);
 
     // ...
     SV* m_handler;
