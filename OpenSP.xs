@@ -1,15 +1,18 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.4 2004/08/27 05:53:05 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.5 2004/09/04 16:56:54 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
 // todo: add const to const things
 // todo: PROTOTYPES
 
+extern "C"
+{
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+}
 
 #include "generic/ParserEventGeneratorKit.h"
 
