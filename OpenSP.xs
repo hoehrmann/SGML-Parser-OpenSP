@@ -1,8 +1,13 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.14 2004/09/14 08:12:24 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.15 2004/09/18 18:35:22 hoehrmann Exp $
 
 // todo: add THX stuff?
+
+// workaround for broken math.h in VC++ 6.0
+#if defined(_MSC_VER) && _MSC_VER < 1300
+#include <math.h>
+#endif
 
 extern "C"
 {
