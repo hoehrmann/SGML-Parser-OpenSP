@@ -1,6 +1,6 @@
 # 01basic.t -- ...
 #
-# $Id: 01basic.t,v 1.1 2004/09/14 08:40:31 hoehrmann Exp $
+# $Id: 01basic.t,v 1.2 2004/11/07 02:21:22 hoehrmann Exp $
 
 use strict;
 use warnings;
@@ -35,5 +35,8 @@ can_ok($p, qw/
     parse
 
     split_message
+
+    pass_file_descriptor
+    parse_string
 /);
 

@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.23 2004/11/07 02:18:26 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.24 2004/11/07 02:21:21 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -80,7 +80,7 @@ sub parse_string
             warn("fileno(...) on temporary file handle failed\n");
             return;
         }
-        $self->parse("<OSFD>" . );
+        $self->parse("<OSFD>" . $no);
     }
     else
     {
