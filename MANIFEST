@@ -7,3 +7,4 @@ typemap
 t/SGML-Parser-OpenSP.t
 lib/SGML/Parser/OpenSP.pm
 lib/SGML/Parser/OpenSP/Tools.pm
+samples/no-doctype.xml
