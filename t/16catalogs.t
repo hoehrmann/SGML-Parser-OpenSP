@@ -1,6 +1,6 @@
 # 16catalogs.t -- ...
 #
-# $Id: 16catalogs.t,v 1.1 2004/09/14 08:40:31 hoehrmann Exp $
+# $Id: 16catalogs.t,v 1.2 2004/10/08 18:08:02 hoehrmann Exp $
 
 use strict;
 use warnings;
@@ -72,7 +72,6 @@ ok($h11->{ok1}, 'proper dtd event');
 ok($h11->{ok2}, 'proper sys id');
 ok($h11->{ok3}, 'proper pub id');
 
-# todo: fails for some reason on Debian
 ok($h11->{ok4}, 'proper osfile gen id');
 ok($h11->{ok5}, 'proper root element');
 

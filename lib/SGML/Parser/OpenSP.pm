@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.21 2004/10/01 23:56:59 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.22 2004/10/08 18:08:01 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -31,8 +31,6 @@ __PACKAGE__->mk_accessors(qw/
     include_params
     active_links
 /);
-
-# todo: needs documentation
 
 sub split_message
 {
