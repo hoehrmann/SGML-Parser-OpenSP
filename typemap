@@ -11,6 +11,9 @@ SgmlParserOpenSPObj
 
 INPUT
 SgmlParserOpenSPObj
+        if ($arg == NULL || !sv_isobject($arg))
+          croak(\"not a proper SGML::Parser::OpenSP object\\n\");
+
         SV** svp = hv_fetch((HV*)SvRV($arg), \"__o\", 3, 0);
 
         if (!svp || !*svp)

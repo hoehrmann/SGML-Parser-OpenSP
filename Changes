@@ -1,7 +1,7 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
 0.99  ...
-	- ...
+	- added more sanity checks to typemap
 
 0.98  Sat Oct 02 01:19:04 2004
 	- added more split_message tests
