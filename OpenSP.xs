@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.16 2004/09/23 23:59:04 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.17 2004/09/24 00:27:02 hoehrmann Exp $
 
 // todo: add THX stuff?
 
@@ -8,6 +8,8 @@
 #if defined(_MSC_VER) && _MSC_VER < 1300
 #include <math.h>
 #endif
+
+#define PERL_NO_GET_CONTEXT
 
 extern "C"
 {
@@ -67,11 +69,27 @@ private:
     bool handler_can(const char* method);
 
     // ...
+    SV* _cs2sv         (const SGMLApplication::CharString s);
+    HV* _location2hv   (const SGMLApplication::Location l);
+    HV* _notation2hv   (const SGMLApplication::Notation n);
+    HV* _externalid2hv (const SGMLApplication::ExternalId id);
+    HV* _entity2hv     (const SGMLApplication::Entity e);
+    HV* _attributes2hv (const SGMLApplication::Attribute* attrs, const size_t n);
+    HV* _attribute2hv  (const SGMLApplication::Attribute a);
+    bool SgmlParserOpenSP::_hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen);
+    void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
+                            ParserEventGeneratorKit& pk,
+                            const enum ParserEventGeneratorKit::OptionWithArg o);
+
+    // ...
     SV* m_handler;
     bool m_parsing;
     SGMLApplication::Position      m_pos;
     SGMLApplication::OpenEntityPtr m_openEntityPtr;
     EventGenerator* m_egp;
+
+    // ...
+    PerlInterpreter* my_perl;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -123,7 +141,7 @@ static U32 HvvType;
 // Helper functions
 ///////////////////////////////////////////////////////////////////////////
 
-SV* _cs2sv(const SGMLApplication::CharString s)
+SV* SgmlParserOpenSP::_cs2sv(const SGMLApplication::CharString s)
 {
     SV* result = newSVpvn("", 0);
     unsigned int i = 0;
@@ -145,16 +163,9 @@ SV* _cs2sv(const SGMLApplication::CharString s)
 // OpenSP data structure conversion helper functions
 ///////////////////////////////////////////////////////////////////////////
 
-static HV* _location2hv   (const SGMLApplication::Location l);
-static HV* _notation2hv   (const SGMLApplication::Notation n);
-static HV* _externalid2hv (const SGMLApplication::ExternalId id);
-static HV* _entity2hv     (const SGMLApplication::Entity e);
-static HV* _attributes2hv (const SGMLApplication::Attribute* attrs, const size_t n);
-static HV* _attribute2hv  (const SGMLApplication::Attribute a);
-
 #define uv_or_undef(x) (x == (unsigned long)-1 ? &PL_sv_undef : newSVuv(x))
 
-static HV* _location2hv(const SGMLApplication::Location l)
+HV* SgmlParserOpenSP::_location2hv(const SGMLApplication::Location l)
 {
     HV* hv = newHV();
 
@@ -168,7 +179,7 @@ static HV* _location2hv(const SGMLApplication::Location l)
     return hv;
 }
 
-static HV* _notation2hv(const SGMLApplication::Notation n)
+HV* SgmlParserOpenSP::_notation2hv(const SGMLApplication::Notation n)
 {
     HV* hv = newHV();
 
@@ -182,7 +193,7 @@ static HV* _notation2hv(const SGMLApplication::Notation n)
     return hv;
 }
 
-static HV* _externalid2hv(const SGMLApplication::ExternalId id)
+HV* SgmlParserOpenSP::_externalid2hv(const SGMLApplication::ExternalId id)
 {
     HV* hv = newHV();
 
@@ -201,7 +212,7 @@ static HV* _externalid2hv(const SGMLApplication::ExternalId id)
     return hv;
 }
 
-static HV* _entity2hv(const SGMLApplication::Entity e)
+HV* SgmlParserOpenSP::_entity2hv(const SGMLApplication::Entity e)
 {
     HV* hv = newHV();
 
@@ -266,7 +277,7 @@ static HV* _entity2hv(const SGMLApplication::Entity e)
     return hv;
 }
 
-static HV* _attributes2hv(const SGMLApplication::Attribute* attrs, size_t n)
+HV* SgmlParserOpenSP::_attributes2hv(const SGMLApplication::Attribute* attrs, size_t n)
 {
     HV* hv = newHV();
 
@@ -280,7 +291,7 @@ static HV* _attributes2hv(const SGMLApplication::Attribute* attrs, size_t n)
     return hv;
 }
 
-static HV* _attribute2hv(const SGMLApplication::Attribute a)
+HV* SgmlParserOpenSP::_attribute2hv(const SGMLApplication::Attribute a)
 {
     HV* hv = newHV();
 
@@ -375,13 +386,13 @@ static HV* _attribute2hv(const SGMLApplication::Attribute a)
 // ...
 ///////////////////////////////////////////////////////////////////////////
 
-static bool _hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen)
+bool SgmlParserOpenSP::_hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen)
 {
     SV** svp = hv_fetch(hv, key, klen, 0);
     return (svp && SvTRUE(*svp));
 }
 
-static void _hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
+void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
                             ParserEventGeneratorKit& pk,
                             const enum ParserEventGeneratorKit::OptionWithArg o)
 {
@@ -429,6 +440,10 @@ static void _hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
 
 SgmlParserOpenSP::SgmlParserOpenSP()
 {
+    dTHX;
+
+    this->my_perl = my_perl;
+
     // compute hashes to improve performance
     PERL_HASH(HvvAttributes,        "Attributes",        10);
     PERL_HASH(HvvByteOffset,        "ByteOffset",        10);
