@@ -3,17 +3,14 @@ SgmlParserOpenSP*		SgmlParserOpenSPObj
 
 OUTPUT
 SgmlParserOpenSPObj
-
-        # this needs work...
-        SV* rv = newRV_noinc(sv_2mortal((SV*)newHV()));
-        sv_setsv($arg, rv);
+        sv_upgrade($arg, SVt_RV);
+        SvRV($arg) = (SV*)newHV();
+        SvROK_on($arg);
         sv_bless($arg, gv_stashpv(CLASS, 1));
         hv_store((HV*)SvRV($arg), \"__o\", 3, newSViv(PTR2IV($var)), 0);
-        $var ->m_self = rv;
 
 INPUT
 SgmlParserOpenSPObj
-
-        # this needs work...
         SV** svp = hv_fetch((HV*)SvRV($arg), \"__o\", 3, 0);
         $var = ($type)SvIV(*svp);
+        $var -> m_self = $arg;

@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.21 2004/09/24 10:57:12 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.22 2004/10/01 21:58:52 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -1164,3 +1164,6 @@ SgmlParserOpenSP::get_location()
 
 void
 SgmlParserOpenSP::halt()
+
+void
+SgmlParserOpenSP::DESTROY()
