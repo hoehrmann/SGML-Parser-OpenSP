@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.17 2004/09/23 10:07:40 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.18 2004/09/23 19:13:51 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -620,6 +620,133 @@ information refer to the OpenSP manual.
 =item * L<http://openjade.sourceforge.net/doc/charset.htm>
 
 =back
+
+=begin comment
+
+=head1 NOTES ON EXTERNAL ENTITIES
+
+(Note that this list of issues in incomplete.)
+
+If you intend to use this module to process untrusted content and/or
+provide access to its output to untrusted users, you should be aware
+of a number of issues involving external entities that might be relevant
+to your application.
+
+OpenSP will attempt to resolve external parsed entities and supports
+resolution of system identifiers in a variety of ways. This can have
+a number of undesired effects:
+
+=over 4
+
+=item undesired network traffic
+
+You can compile OpenSP to support HTTP and if you attempt to process a
+document like
+
+  <!DOCTYPE example SYSTEM "http://www.example.org/example.dtd">
+  <example></example>
+
+OpenSP will attempt to fetch C<http://www.example.org/example.dtd> if
+the system identifier cannot be generated from a catalog entry. A
+malicious user might be able to abuse this ability to run denial of
+service attacks on specific hosts or just to drive your network traffic
+expenses.
+
+=item access to internal and restricted resources
+
+If the machine and/or service running this module has access privileges
+to specific resources, a malicious user might be able to access these
+resources in undesired ways or even be able to read such resources if
+output from this module is exposed to them.
+
+Examples for such attacks might include triggering read access to special
+resources like C</dev/stdin> which might never finish or C</etc/passwd>
+of which the content might be revealed depending on how much output from
+this module is made available. If error messages are made available, a
+document like
+
+  <!DOCTYPE x [
+    <!ENTITY x SYSTEM "/etc/passwd">
+    <!ATTLIST x x (x|y) #IMPLIED>]
+  ><x x="&x;"></x>
+
+could trigger such behavior as OpenSP cites the content of the entity
+replacement text in one of the error messages for the document (and
+elsewhere). To restrict access to local file resources have a look at
+the C<restrict_file_reading> method and the documentation of the
+functionality in the OpenSP documentation.
+
+The same applies to HTTP resources, if a web server trusts your host it
+might reveal private data, for example, you have a web server on localhost
+with a document root of C</>, then
+
+  <!DOCTYPE x [
+    <!ENTITY x SYSTEM "http://localhost/etc/passwd">
+    <!ATTLIST x x (x|y) #IMPLIED>]
+  ><x x="&x;"></x>
+
+would have the same effect if the web server has access privileges to
+the file.
+
+Formal system identifiers might be an additional problem in this regard,
+OpenSP for example generally supports documents like
+
+  <!DOCTYPE x SYSTEM "<osfd>4">
+  <x></x>
+  
+In order to resolve the system identifier OpenSP would attempt to read
+from the file descriptor C<4> if the system supports that and C<4>
+happens to be a legal file descriptor. See the OpenSP documentation on
+system identifiers for additional information.
+
+=item memory problems
+
+Note in particular that OpenSP supports a literal storage manager which
+would attempt to read from a string, an example would be
+
+  <!DOCTYPE x SYSTEM "<LITERAL>
+    <!ELEMENT x - - EMPTY>
+  >
+  <x>
+
+While generally harmless, you should note that OpenSP's current
+implementation would create many copies of the system identifier
+most of which are encoded using 4 bytes per character and which gets
+duplicated in a number of places, e.g. in error messages. Such a document
+could be used in a denial of service attack where your application runs
+quickly out of memory even for relatively small input documents.
+
+=back
+
+One strategy to avoid such problems would be to limit the resolution of
+external entities, it is for example possible to C<halt> the parser from
+within a C<start_dtd> handler after checking the specified and/or generated
+system identifier for proper values. Though consider a document like
+
+  <!DOCTYPE x [
+    <!ENTITY % x SYSTEM '...'>
+    %x;
+  ]><x></x>
+
+Here OpenSP would attempt to read from the external entity and the
+C<start_dtd> would not know about it. This can be solved by using a
+C<general_entity> handler which would be called when the reference to
+the parameter entity in the example above is encountered, the same for
+a document like
+
+  <!DOCTYPE x [
+    <!ENTITY x SYSTEM '...'>
+  ]><x>&x;</x>
+
+Note that halting from all undesired C<start_dtd> and C<general_entity>
+events might not be sufficient to prevent reading of external entities.
+
+Using the C<open_entity_change> event you can keep track of attempts to
+open external parsed entities referenced from the document or one of its
+entities. Note that the event handler gets called B<after> OpenSP opened
+the entity.
+
+=end comment
 
 =head1 ENVIRONMENT VARIABLES
 
