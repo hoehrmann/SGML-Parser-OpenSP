@@ -4,6 +4,15 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
+# TODO:
+#
+# On non-win32 systems
+#
+#   CC   => 'g++',
+#   LD   => 'g++',
+#   LIBS => '[-lstdc++ -losp]',
+#
+
 WriteMakefile(
     NAME              => 'SGML::Parser::OpenSP',
 

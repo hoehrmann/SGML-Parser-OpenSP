@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.8 2004/09/09 02:07:26 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.9 2004/09/09 04:10:39 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
@@ -13,6 +13,8 @@ extern "C"
 #include "perl.h"
 #include "XSUB.h"
 }
+
+// todo: this should be OpenSP/Parser... on non-win32 systems
 
 #include "generic/ParserEventGeneratorKit.h"
 
