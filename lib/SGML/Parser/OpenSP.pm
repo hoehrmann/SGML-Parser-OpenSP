@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.11 2004/09/13 13:37:07 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.12 2004/09/13 13:47:43 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -418,7 +418,7 @@ is loaded. This means you need to wrap the code into a C<BEGIN> block:
   BEGIN { $ENV{SP_CHARSET_FIXED} = 1; }
   use SGML::Parser::OpenSP;
   # ...
-  
+
 Otherwise changes to the environment might not propagate to OpenSP.
 This applies specifically to Win32 systems. 
 
