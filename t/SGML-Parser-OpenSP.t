@@ -1,16 +1,17 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.9 2004/09/12 09:50:36 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.10 2004/09/12 17:09:23 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 166;
+use Test::More tests => 172;
 use Test::Exception;
 use Encode qw();
 use File::Spec qw();
 use Cwd qw();
 
-use constant NO_DOCTYPE => (File::Spec->catfile('samples', 'no-doctype.xml'));
+use constant NO_DOCTYPE   => File::Spec->catfile('samples', 'no-doctype.xml');
+use constant TEST_CATALOG => File::Spec->catfile('samples', 'test.soc');
 
 #########################################################
 ## Basic Tests
@@ -388,17 +389,26 @@ $p->restrict_file_reading(0);
 #########################################################
 
 sub TestHandler9::new{bless{p=>$_[1],ok1=>0},shift}
-sub TestHandler9::start_element{shift->{p}->parse_file(NO_DOCTYPE)}
-sub TestHandler9::end_element{shift->{ok1}--}
+sub TestHandler9::start_element
+{
+    my $s = shift;
+    
+    eval
+    {
+        $s->{p}->parse_file(NO_DOCTYPE)
+    };
+        
+    $s->{ok1}-- unless $@;
+}
 
 my $h9 = TestHandler9->new($p);
 
 $p->handler($h9);
 
-dies_ok { $p->parse_file(NO_DOCTYPE) }
+lives_ok { $p->parse_file(NO_DOCTYPE) }
   'parse_file must not be called from handler';
 
-is($h9->{ok1}, 0, 'end_element not called');
+is($h9->{ok1}, 0, 'parse_file from handler croaks');
 
 #########################################################
 ## non-scalar to parse_file
@@ -423,8 +433,73 @@ dies_ok { $p->parse_file(\*F) }
 ok(close(F), 'can close no-doctype.xml');
 
 #########################################################
+## SGML Catalogs
+#########################################################
+
+sub TestHandler11::new{bless{ok1=>0,ok2=>0,ok3=>0,ok4=>0,ok5=>0},shift}
+sub TestHandler11::start_dtd
+{
+    my $s = shift;
+    my $d = shift;
+    
+    return unless defined $s;
+    return unless defined $d;
+    
+    my $e = $d->{ExternalId};
+    
+    return unless defined $e;
+    
+    $s->{ok1}++;
+    
+    $s->{ok2}++ if exists $e->{SystemId} and $e->{SystemId} eq
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd";
+      
+    $s->{ok3}++ if exists $e->{PublicId} and $e->{PublicId} eq
+      "-//W3C//DTD XHTML 1.0 Strict//EN";
+      
+    # this might fail in case of conflicting catalogs :-(
+    $s->{ok4}++ if exists $e->{GeneratedSystemId} and
+      $e->{GeneratedSystemId} =~ /^<OSFILE>/i;
+      
+    $s->{ok5}++ if exists $d->{Name} and
+      $d->{Name} eq "html";
+}
+
+my $h11 = TestHandler11->new;
+
+$p->catalogs(TEST_CATALOG);
+$p->handler($h11);
+
+lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+</head>
+<body>
+<p dir="&#xa;">...</p>
+</body>
+</html>
+__DOC__
+} 'catalogs';
+
+ok($h11->{ok1}, 'proper dtd event');
+ok($h11->{ok2}, 'proper sys id');
+ok($h11->{ok3}, 'proper pub id');
+
+# todo: fails for some reason on Debian
+ok($h11->{ok4}, 'proper osfile gen id');
+ok($h11->{ok5}, 'proper root element');
+
+# reset catalogs
+$p->catalogs([]);
+
+#########################################################
 ## show_error_numbers
 #########################################################
+
+# ...
 
 #########################################################
 ## SGML::Parser::OpenSP::Tools
@@ -440,29 +515,56 @@ ok(!$p->show_open_elements, 'show_open_elements turned off');
 
 =pod
 
-sub TestHandler11::new{bless{p=>$_[1],ok1=>0,ok2=>0,ok3=>0,ok4=>0},shift}
-sub TestHandler11::error
+sub TestHandler12::new{bless{p=>$_[1],ok1=>0,ok2=>0,ok3=>0,ok4=>0},shift}
+sub TestHandler12::error
 {
     my $s = shift;
     my $e = shift;
+    my $p = $s->{p};
+    
+    return unless defined $s and
+                  defined $e and
+                  defined $p;
+                  
+    my $l = $p->get_location;
+    
+    return unless defined $l;
+    $s->{ok1}++;
+    my $m;
+    
+    eval
+    {
+        $m = $p->split_message($e);
+    };
+    
+    return if $@;
+    $s->{ok2}++;
 }
 
-my $h11 = TestHandler11->new($p);
-$p->handler($h11);
+my $h12 = TestHandler12->new($p);
+$p->handler($h12);
+$p->show_error_numbers(1);
 
 lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
 <!DOCTYPE no-doctype [
   <!ELEMENT no-doctype - - (#PCDATA)>
   <!ATTLIST no-doctype x (x|y) #IMPLIED>
-]><no-doctype x='&#xa;'></no-doctype>
+]><no-doctype x='&#10;&#13;'></no-doctype>
 __DOC__
 } '...';
+
+$p->show_error_numbers(0);
 
 =cut
 
 #########################################################
 ## Parser refcounting
 #########################################################
+
+# this is not exactly what I want, the issue here is that
+# I would like to tell whether in this cleanup process is
+# an attempt to free an unreferenced scalar for which Perl
+# would not croak but write to STDERR
 
 lives_ok
 {
