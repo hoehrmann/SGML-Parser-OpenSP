@@ -1,6 +1,6 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.12 2004/09/14 07:57:56 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.13 2004/09/14 08:12:24 hoehrmann Exp $
 
 use strict;
 use warnings;
@@ -41,7 +41,7 @@ can_ok($p, qw/
     include_params
     active_links
 
-    parse_file
+    parse
 
     split_message
 /);
@@ -63,10 +63,10 @@ isnt($p->{__o}, 0,
 dies_ok { $p->get_location }
   'must die when calling get_location while not parsing';
 
-dies_ok { $p->parse_file }
-  'must die when no file name specified for parse_file';
+dies_ok { $p->parse }
+  'must die when no file name specified for parse';
 
-dies_ok { $p->parse_file(NO_DOCTYPE) }
+dies_ok { $p->parse(NO_DOCTYPE) }
   'must die when no handler specified';
 
 #########################################################
@@ -81,12 +81,12 @@ is($p->handler, 7, 'accessor');
 ## More Exceptions
 #########################################################
 
-dies_ok { $p->parse_file(NO_DOCTYPE) }
+dies_ok { $p->parse(NO_DOCTYPE) }
   'must die when handler not an object';
 
 $p->handler(bless{}, 'NullHandler');
 
-lives_ok { $p->parse_file(NO_DOCTYPE) }
+lives_ok { $p->parse(NO_DOCTYPE) }
   'must not die when handler cannot handle a method';
 
 #########################################################
@@ -130,7 +130,7 @@ isa_ok($h1, 'TestHandler1');
 
 $p->handler($h1);
 
-lives_ok { $p->parse_file(NO_DOCTYPE) }
+lives_ok { $p->parse(NO_DOCTYPE) }
   'basic parser test';
 
 ok($h1->{ok1}, 'self to handler');
@@ -150,7 +150,7 @@ ok($h1->{ok9}, 'has content type');
 $h1 = TestHandler1->new;
 
 $p->handler($h1);
-lives_ok { $p->parse_file("<LITERAL><no-doctype></no-doctype>") }
+lives_ok { $p->parse("<LITERAL><no-doctype></no-doctype>") }
   'reading from a <literal>';
 
 ok($h1->{ok1}, 'self to handler');
@@ -175,7 +175,7 @@ isa_ok($h2, 'TestHandler2');
 
 $p->handler($h2);
 
-lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
+lives_ok { $p->parse("<LITERAL><no-doctype><!--...--></no-doctype>") }
   'comments not reported by default';
 
 is($h2->{ok1}, 0, 'comments not default');
@@ -197,7 +197,7 @@ $p->output_comment_decls(1);
 
 is($p->output_comment_decls, 1, 'comments turned on');
 
-lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
+lives_ok { $p->parse("<LITERAL><no-doctype><!--...--></no-doctype>") }
   'comment reported at user option';
   
 isnt($h3->{ok}, 0, 'comments ok');
@@ -240,7 +240,7 @@ my $h4 = TestHandler4->new($p);
 
 $p->handler($h4);
 
-lives_ok { $p->parse_file("<LITERAL>\n  \n  <no-doctype></no-doctype>") }
+lives_ok { $p->parse("<LITERAL>\n  \n  <no-doctype></no-doctype>") }
   'implied dtd locations';
 
 is($h4->{ok1}, 1, "implied col");
@@ -261,7 +261,7 @@ sub TestHandler5::error
 
 my $h5 = TestHandler5->new;
 $p->handler($h5);
-lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
+lives_ok { $p->parse("<LITERAL>" . <<"__DOC__");
 <!DOCTYPE no-doctype [
   <!ELEMENT no-doctype - - (#PCDATA)>
   <!ATTLIST no-doctype x CDATA #REQUIRED>
@@ -291,7 +291,7 @@ for (1..20)
     
     $p->handler(bless{},'TestHandler6');
 
-    lives_ok { $p->parse_file("<LITERAL><no-doctype></no-doctype>") }
+    lives_ok { $p->parse("<LITERAL><no-doctype></no-doctype>") }
       'reading from a <literal>';
     
     push @parser, $p;
@@ -350,7 +350,7 @@ my $h7 = TestHandler7->new;
 
 $p->handler($h7);
 
-lives_ok { $p->parse_file("<LITERAL><no-doctype x='y'>Bj&#246;rn</no-doctype>") }
+lives_ok { $p->parse("<LITERAL><no-doctype x='y'>Bj&#246;rn</no-doctype>") }
   'utf8 flags';
 
 is($h7->{ok0}, 0, 'utf8 pcdata');
@@ -388,7 +388,7 @@ my $h8 = TestHandler8->new;
 $p->handler($h8);
 $p->restrict_file_reading(1);
 
-lives_ok { $p->parse_file("samples/../samples/no-doctype.xml") }
+lives_ok { $p->parse("samples/../samples/no-doctype.xml") }
   'must not read paths with ..';
 
 is($h8->{ok1}, 0, 'must not read paths with ..');
@@ -396,7 +396,7 @@ isnt($h8->{ok2}, 0, 'must not read paths with ..');
 $h8->{ok1} = 0;
 $h8->{ok2} = 0;
 
-lives_ok { $p->parse_file("./samples/no-doctype.xml") }
+lives_ok { $p->parse("./samples/no-doctype.xml") }
   'must not read paths with ./';
 
 is($h8->{ok1}, 0, 'must not read paths with ./');
@@ -408,7 +408,7 @@ my $sd = File::Spec->catfile(File::Spec->rel2abs('.'), 'samples');
 
 $p->search_dirs($sd);
 
-lives_ok { $p->parse_file(File::Spec->catfile($sd, 'no-doctype.xml')) }
+lives_ok { $p->parse(File::Spec->catfile($sd, 'no-doctype.xml')) }
   'allow to read sample dir in restricted mode';
 
 isnt($h8->{ok1}, 0, 'allow to read sample dir in restricted mode');
@@ -418,7 +418,7 @@ $p->search_dirs([]);
 $p->restrict_file_reading(0);
 
 #########################################################
-## parse_file from handler
+## parse from handler
 #########################################################
 
 sub TestHandler9::new{bless{p=>$_[1],ok1=>0},shift}
@@ -428,7 +428,7 @@ sub TestHandler9::start_element
     
     eval
     {
-        $s->{p}->parse_file(NO_DOCTYPE)
+        $s->{p}->parse(NO_DOCTYPE)
     };
         
     $s->{ok1}-- unless $@;
@@ -438,13 +438,13 @@ my $h9 = TestHandler9->new($p);
 
 $p->handler($h9);
 
-lives_ok { $p->parse_file(NO_DOCTYPE) }
-  'parse_file must not be called from handler';
+lives_ok { $p->parse(NO_DOCTYPE) }
+  'parse must not be called from handler';
 
-is($h9->{ok1}, 0, 'parse_file from handler croaks');
+is($h9->{ok1}, 0, 'parse from handler croaks');
 
 #########################################################
-## non-scalar to parse_file
+## non-scalar to parse
 #########################################################
 
 sub TestHandler10::new{bless{},shift}
@@ -452,16 +452,16 @@ sub TestHandler10::new{bless{},shift}
 my $h10 = TestHandler10->new;
 $p->handler($h10);
 
-dies_ok { $p->parse_file({}) }
-  'non-scalar to parse_file';
+dies_ok { $p->parse({}) }
+  'non-scalar to parse';
 
-dies_ok { $p->parse_file([]) }
-  'non-scalar to parse_file';
+dies_ok { $p->parse([]) }
+  'non-scalar to parse';
 
 ok(open(F, '<', NO_DOCTYPE), 'can open no-doctype.xml');
 
-dies_ok { $p->parse_file(\*F) }
-  'file handle to parse_file';
+dies_ok { $p->parse(\*F) }
+  'file handle to parse';
 
 ok(close(F), 'can close no-doctype.xml');
 
@@ -503,7 +503,7 @@ my $h11 = TestHandler11->new;
 $p->catalogs(TEST_CATALOG);
 $p->handler($h11);
 
-lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
+lives_ok { $p->parse("<LITERAL>" . <<"__DOC__");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -587,7 +587,7 @@ $p->handler($h12);
 $p->catalogs(TEST_CATALOG);
 $p->show_error_numbers(1);
 
-lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
+lives_ok { $p->parse("<LITERAL>" . <<"__DOC__");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -641,7 +641,7 @@ sub TestHandler13::end_element
 my $h13 = TestHandler13->new($p);
 $p->handler($h13);
 
-lives_ok { $p->parse_file(NO_DOCTYPE); }
+lives_ok { $p->parse(NO_DOCTYPE); }
   'normal halt';
 
 ok($h13->{ok1}, 'halt handler called');
@@ -673,7 +673,7 @@ my $h14 = TestHandler14->new;
 
 $p->handler($h14);
 
-throws_ok { $p->parse_file(NO_DOCTYPE) } qr/SUCKS!/,
+throws_ok { $p->parse(NO_DOCTYPE) } qr/SUCKS!/,
   'die in handler propagates';
 
 ok($h14->{ok1});
@@ -681,7 +681,7 @@ is($h14->{ok2}, 0, 'die in handler halts');
 
 $p->handler(bless{},'NullHandler');
 
-lives_ok { $p->parse_file(NO_DOCTYPE) }
+lives_ok { $p->parse(NO_DOCTYPE) }
   'object still usable after die in handler';
 
 #########################################################

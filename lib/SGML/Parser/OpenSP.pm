@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.14 2004/09/14 06:36:43 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.15 2004/09/14 08:12:24 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -72,7 +72,7 @@ SGML::Parser::OpenSP - Parse SGML documents using OpenSP
   $p->warnings(qw(xml valid));
   $p->handler($h);
 
-  $p->parse_file("example.xhtml");
+  $p->parse("example.xhtml");
 
 =head1 DESCRIPTION
 
@@ -294,10 +294,10 @@ C<VALIDITY> and C<IMPLYDEF> specified in the SGML declaration will be used.
 =head1 PROCESSING FILES
 
 In order to start processing of a document and recieve events, the
-C<parse_file> method must be called. It takes one argument specifying
+C<parse> method must be called. It takes one argument specifying
 the path to a file (not a file handle). You must set an event handler
 using the C<handler> method prior to using this method. The return
-value of C<parse_file> is currently undefined.
+value of C<parse> is currently undefined.
 
 =head1 EVENT HANDLERS
 
@@ -391,7 +391,7 @@ expect (but don't check) that string arguments are UTF-8 encoded and have
 the UTF-8 flag turned on. Behavior of helper functions is undefined when
 you pass unexpected input and should be avoided.
 
-C<parse_file> has limited support for binary input, but the binary input
+C<parse> has limited support for binary input, but the binary input
 must be compatible with OpenSP's generic interface requirements and you
 must specify the encoding through means available to OpenSP to enable it
 to properly decode the binary input. Any encoding meta data about such
@@ -467,7 +467,7 @@ C<SGML_CATALOG_FILES> and attributes on storage object specifications
 for C<SP_BCTF> and C<SP_ENCODING> respectively. For example, if
 C<SP_CHARSET_FIXED> is set to C<1> you can use
 
-  $p->parse_file("<OSFILE encoding='UTF-8'>example.xhtml");
+  $p->parse("<OSFILE encoding='UTF-8'>example.xhtml");
 
 to process C<example.xhtml> using the C<UTF-8> character encoding.
 

@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.13 2004/09/14 06:29:39 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.14 2004/09/14 08:12:24 hoehrmann Exp $
 
 // todo: add THX stuff?
 
@@ -27,7 +27,7 @@ class SgmlParserOpenSP : private SGMLApplication {
 public:
 
     SgmlParserOpenSP();
-    void parse_file(SV* file_sv);
+    void parse(SV* file_sv);
     SV* get_location();
     void halt();
 
@@ -540,7 +540,7 @@ void SgmlParserOpenSP::dispatchEvent(const char* name, const HV* hv)
     }
 }
 
-void SgmlParserOpenSP::parse_file(SV* file_sv)
+void SgmlParserOpenSP::parse(SV* file_sv)
 {
     ParserEventGeneratorKit pk;
     HV* hv;
@@ -553,7 +553,7 @@ void SgmlParserOpenSP::parse_file(SV* file_sv)
         croak("not a proper file name\n");
         
     if (m_parsing)
-        croak("parse_file must not be called during parse\n");
+        croak("parse must not be called during parse\n");
 
     if (!m_self || !sv_isobject(m_self))
         croak("not a proper SGML::Parser::OpenSP object\n");
@@ -1107,7 +1107,7 @@ SgmlParserOpenSP*
 SgmlParserOpenSP::new()
 
 void
-SgmlParserOpenSP::parse_file(SV* file_sv)
+SgmlParserOpenSP::parse(SV* file_sv)
 
 SV*
 SgmlParserOpenSP::get_location()
