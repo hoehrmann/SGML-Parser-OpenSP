@@ -7,6 +7,7 @@ Revision history for Perl extension SGML::Parser::OpenSP.
 	- TODO: added more split_message tests
 	- TODO: added description for ::Tools POD
 	- TODO: updated README to mention PPMs
+	- major memory management improvements
 	- fixed 0.02 release date in CHANGES
 	- updated map_catalog_document documentation
 	- updated restrict_file_reading documentation

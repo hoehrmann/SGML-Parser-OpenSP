@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.15 2004/09/18 18:35:22 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.16 2004/09/23 23:59:04 hoehrmann Exp $
 
 // todo: add THX stuff?
 
@@ -525,7 +525,10 @@ bool SgmlParserOpenSP::handler_can(const char* method)
 void SgmlParserOpenSP::dispatchEvent(const char* name, const HV* hv)
 {
     dSP;
-    
+
+    ENTER;
+    SAVETMPS;
+
     PUSHMARK(SP);
     XPUSHs(m_handler);
     XPUSHs(hv ? sv_2mortal(newRV_noinc((SV*)hv)) : &PL_sv_undef);
@@ -543,6 +546,11 @@ void SgmlParserOpenSP::dispatchEvent(const char* name, const HV* hv)
         m_egp->halt();
         POPs;
     }
+
+    PUTBACK;
+
+    FREETMPS;
+    LEAVE;
 }
 
 void SgmlParserOpenSP::parse(SV* file_sv)
