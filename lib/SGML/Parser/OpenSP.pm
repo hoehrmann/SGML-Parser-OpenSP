@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.10 2004/09/13 13:32:38 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.11 2004/09/13 13:37:07 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -468,7 +468,7 @@ for C<SP_BCTF> and C<SP_ENCODING> respectively. For example, if
 C<SP_CHARSET_FIXED> is set to C<1> you can use
 
   $p->parse_file("<OSFILE encoding='UTF-8'>example.xhtml");
-  
+
 to process C<example.xhtml> using the C<UTF-8> character encoding.
 
 =head1 KNOWN ISSUES
