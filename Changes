@@ -1,7 +1,7 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
-0.98  ...
-	- TODO: added more split_message tests
+0.98  Sat Oct 02 01:19:04 2004
+	- added more split_message tests
 	- fixed remaining typemap flaws
 	- added description for ::Tools POD
 	- better headings in OpenSP POD

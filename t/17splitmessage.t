@@ -1,10 +1,10 @@
 # 17splitmessage.t -- ...
 #
-# $Id: 17splitmessage.t,v 1.1 2004/09/14 08:40:31 hoehrmann Exp $
+# $Id: 17splitmessage.t,v 1.2 2004/10/01 23:21:19 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 18;
 use Test::Exception;
 use File::Spec qw();
 
@@ -12,7 +12,11 @@ use constant NO_DOCTYPE   => File::Spec->catfile('samples', 'no-doctype.xml');
 use constant TEST_CATALOG => File::Spec->catfile('samples', 'test.soc');
 
 BEGIN { use_ok('SGML::Parser::OpenSP') };
+BEGIN { use_ok('SGML::Parser::OpenSP::Tools') };
+
 require_ok('SGML::Parser::OpenSP');
+require_ok('SGML::Parser::OpenSP::Tools');
+
 my $p = SGML::Parser::OpenSP->new;
 isa_ok($p, 'SGML::Parser::OpenSP');
 
@@ -94,3 +98,107 @@ ok($h12->{ok8}, 'correct text 131');
 $p->catalogs([]);
 $p->show_error_numbers(0);
 
+my @tests = (
+
+### 1 ###
+
+{
+input => [
+  q(<OSFD>0:116:49:1075801588.108:E: there is no attribute "XMLNS:UTILITY"),
+  q(<OSFD>0),
+  0,
+  1,
+  0,
+],
+
+output => {
+  primary_message => {
+    Number => '108',
+    ColumnNumber => '49',
+    Module => '1075801588',
+    Severity => 'E',
+    LineNumber => '116',
+    Text => 'there is no attribute "XMLNS:UTILITY"'
+  }
+}
+},
+
+### 2 ###
+
+{
+input => [
+  q(c:\\temp\\file:116:49:1075801588.108:E: there is no attribute "XMLNS:UTILITY"),
+  q(c:\\temp\\file),
+  0,
+  1,
+  0,
+],
+
+output => {
+  primary_message => {
+    Number => '108',
+    ColumnNumber => '49',
+    Module => '1075801588',
+    Severity => 'E',
+    LineNumber => '116',
+    Text => 'there is no attribute "XMLNS:UTILITY"'
+  }
+}
+
+},
+
+### 3 ###
+
+{
+input => [
+  q(c:\\temp\\file:116:49:E: there is no attribute "XMLNS:UTILITY"),
+  q(c:\\temp\\file),
+  0,
+  0,
+  0,
+],
+
+output => {
+  primary_message => {
+    ColumnNumber => '49',
+    Severity => 'E',
+    LineNumber => '116',
+    Text => 'there is no attribute "XMLNS:UTILITY"'
+  }
+}
+
+},
+
+### 4 ###
+
+{
+input => [
+  q(<OSFD>0:320:175:1075801588.338:W: cannot generate system identifier for general entity "AP"),
+  q(<OSFD>0),
+  0,
+  1,
+  0,
+],
+
+output => {
+  primary_message => {
+    Number => '338',
+    ColumnNumber => '175',
+    Module => '1075801588',
+    Severity => 'W',
+    LineNumber => '320',
+    Text => 'cannot generate system identifier for general entity "AP"'
+  }
+}
+
+},
+
+);
+
+foreach (@tests)
+{
+    my $inpu = $_->{input};
+    my $outp = $_->{output};
+    my $resu = SGML::Parser::OpenSP::Tools::split_message(@$inpu);
+    is_deeply($resu, $outp);
+}
