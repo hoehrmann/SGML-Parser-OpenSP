@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.15 2004/09/14 08:12:24 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.16 2004/09/22 18:28:02 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -10,7 +10,7 @@ use SGML::Parser::OpenSP::Tools qw();
 
 use base qw(Class::Accessor);
 
-our $VERSION = '0.02';
+our $VERSION = '0.98';
 
 require XSLoader;
 XSLoader::load('SGML::Parser::OpenSP', $VERSION);
