@@ -1,12 +1,11 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.3 2004/09/09 23:12:54 hoehrmann Exp $
+# $Id: Tools.pm,v 1.4 2004/09/09 23:26:35 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
 use strict;
 use warnings;
-use Data::Dumper;
 use Carp;
 
 # white-space as defined in XML 1.0
@@ -102,8 +101,6 @@ sub split_message
                                             ColumnNumber => $4 }
         }
     }
-    
-    print Dumper[ $mess, \%resu ];
     
     # split into components
     my @comp = split(/(?:^|\n)\Q$name\E:(\d+):(\d+):\s*/, $mess);
