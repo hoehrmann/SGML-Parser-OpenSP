@@ -20,6 +20,7 @@ WriteMakefile(
 
     PREREQ_PM         => {
       Class::Accessor => 0,
+      Test::Exception => 0,
     },
 
     ($] >= 5.005 ?
