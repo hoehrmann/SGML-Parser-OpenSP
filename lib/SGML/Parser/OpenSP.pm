@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.8 2004/09/13 08:28:41 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.9 2004/09/13 09:29:34 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -441,7 +441,7 @@ for details.
 
 =item * L<http://openjade.sf.net/doc/generic.htm>
 
-=item * L<http://openajde.sf.net/>
+=item * L<http://openjade.sf.net/>
 
 =item * L<http://sf.net/projects/spo/>
 

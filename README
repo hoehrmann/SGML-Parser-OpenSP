@@ -18,7 +18,7 @@ This module requires these other modules and libraries:
 
   Perl 5.8.0 or later
   Class::Accesor
-  The OpenSP library v1.5.2 or later, see http://openajde.sf.net/ 
+  The OpenSP library v1.5.2 or later, see http://openjade.sf.net/ 
 
 COPYRIGHT AND LICENCE
 
