@@ -1,6 +1,6 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.5 2004/09/09 23:53:13 hoehrmann Exp $
+# $Id: Tools.pm,v 1.6 2004/09/12 14:35:09 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
@@ -102,8 +102,19 @@ sub split_message
         }
     }
     
-    # split into components
-    my @comp = split(/(?:^|\n)\Q$name\E:(\d+):(\d+):\s*/, $mess);
+    # this splits the error message into its components. this is designed
+    # to cope with most if not all delimiter problems inherent to the
+    # message format which does not escape delimiters which can result in
+    # ambiguous data. The following format is expected by this code
+    # each error message component starts on a new line which is either
+    # the first line or something that follows \n, then an optional formal
+    # system identifier such as <LITERAL> or <OSFILE>, then the file name
+    # as reported by $p->get_location->{FileName} then the line and finally
+    # the column number -- for each message there should thus be three
+    # individual components, line, column, "text" -- which can contain
+    # additional components depending on the message, see below.
+    
+    my @comp = split(/(?:^|\n)(?:<[^>]+>)?\Q$name\E:(\d+):(\d+):\s*/, $mess);
     
     # check for proper format, the first component must be
     # empty and each entry must have line, column and text
