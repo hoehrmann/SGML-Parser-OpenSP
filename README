@@ -1,0 +1,31 @@
+SGML/Parser/OpenSP version 0.01
+===============================
+
+Perl XS interface to the OpenSP SGML and XML Parser.
+
+This code is a prototype and you probably don't want it.
+Patches and help with developing it into something that _can_ actually be
+used for something would be much appreciated though!
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  libosp.so - The OpenSP library from http://openajde.sf.net/
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2003 Terje Bless <link@cpan.org>
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
