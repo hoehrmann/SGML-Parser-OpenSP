@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.6 2004/09/09 23:44:06 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.7 2004/09/13 07:53:26 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -386,6 +386,30 @@ a hash reference with the following properties:
 
 These can be C<undef> or an empty string.
 
+=head1 UNICODE SUPPORT
+
+All strings returned from event handlers and helper routines are UTF-8
+encoded with the UTF-8 flag turned on, helper functions like C<split_message>
+expect (but don't check) that string arguments are UTF-8 encoded and have
+the UTF-8 flag turned on. Behavior of helper functions is undefined when
+you pass unexpected input and should be avoided.
+
+C<parse_file> has limited support for binary input, but the binary input
+must be compatible with OpenSP's generic interface requirements and you
+must specify the encoding through means available to OpenSP to enable it
+to properly decode the binary input. Any encoding meta data about such
+binary input specific to Perl (such as encoding disciplines for file
+handles when you pass a file descriptor) will be ignored. For more specific
+information refer to the OpenSP manual.
+
+=over 4
+
+=item * L<http://openjade.sourceforge.net/doc/sysid.htm>
+
+=item * L<http://openjade.sourceforge.net/doc/charset.htm>
+
+=back
+
 =head1 KNOWN ISSUES
 
 OpenSP must be compiled with C<SP_MULTI_BYTE> I<defined> and with
@@ -395,6 +419,8 @@ at runtime or not compile.
 OpenSP supports a number of environment variables for configuration,
 this module currently does not change the environment, you are thus
 responsible to set (or unset) them as you find appropriate.
+
+Individual warnings for -wxml are not listed in this POD.
 
 The typemap is crap.
 
