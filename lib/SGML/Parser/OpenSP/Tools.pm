@@ -1,8 +1,8 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.2 2004/09/09 23:05:31 hoehrmann Exp $
+# $Id: Tools.pm,v 1.3 2004/09/09 23:12:54 hoehrmann Exp $
 
-package SGML::Parser::OpenSP;
+package SGML::Parser::OpenSP::Tools;
 use 5.008; 
 use strict;
 use warnings;
@@ -92,7 +92,7 @@ sub split_message
     
     my %resu;
     
-    if ($oent) # @@
+    if ($oent)
     {
         while($mess =~ s/^In entity (\S+) included from (.*?):(\d+):(\d+)\s+//)
         {
@@ -186,7 +186,7 @@ __END__
 
 =head1 NAME
 
-...
+SGML::Parser::OpenSP::Tools - Tools to process OpenSP output
 
 =head1 DESCRIPTION
 
