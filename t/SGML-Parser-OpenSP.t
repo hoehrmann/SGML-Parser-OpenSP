@@ -1,14 +1,16 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.6 2004/09/11 06:58:50 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.7 2004/09/11 07:55:08 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 160;
+use Test::More tests => 146;
 use Test::Exception;
 use Encode qw();
+use File::Spec qw();
+use Cwd qw();
 
-use constant NO_DOCTYPE => 'samples/no-doctype.xml';
+use constant NO_DOCTYPE => (File::Spec->catfile('samples', 'no-doctype.xml'));
 
 #########################################################
 ## Basic Tests
@@ -136,6 +138,8 @@ my $h2 = TestHandler2->new(0);
 
 isa_ok($h2, 'TestHandler2');
 
+$p->handler($h2);
+
 lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
   'comments not reported by default';
 
@@ -143,12 +147,14 @@ lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
 ## Comments at user option
 #########################################################
 
-sub TestHandler3::new         { bless{},shift }
-sub TestHandler3::comment     { pass }
+sub TestHandler3::new         { bless{ok=>0},shift }
+sub TestHandler3::comment_decl{ $_[0]->{ok}++ }
 
 my $h3 = TestHandler3->new(1);
 
 isa_ok($h3, 'TestHandler3');
+
+$p->handler($h3);
 
 $p->output_comment_decls(1);
 
@@ -156,6 +162,8 @@ is($p->output_comment_decls, 1, 'comments turned on');
 
 lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
   'comment reported at user option';
+  
+isnt($h3->{ok}, 0, 'comments ok');
 
 $p->output_comment_decls(0);
 
@@ -321,6 +329,32 @@ is($h7->{ok4}, 1, 'end element name');
 is($h7->{ok5}, 1, 'complete data');
 is($h7->{ok6}, 1, 'complete data');
 is($h7->{ok7}, 1, 'correct data');
+
+#########################################################
+## restricted reading
+#########################################################
+
+sub TestHandler8::new{bless{},shift}
+sub TestHandler8::start_element{die}
+
+$p->handler(TestHandler8->new);
+$p->restrict_file_reading(1);
+
+lives_ok { $p->parse_file("samples/../samples/no-doctype.xml") }
+  'must not read paths with ..';
+  
+lives_ok { $p->parse_file("./samples/no-doctype.xml") }
+  'must not read paths with ./';
+
+my $sd = File::Spec->catfile(File::Spec->rel2abs('.'), 'samples');
+
+$p->search_dirs($sd);
+
+dies_ok { $p->parse_file(File::Spec->catfile($sd, 'no-doctype.xml')) }
+  'allow to read sample dir in restricted mode';
+
+$p->search_dirs([]);
+$p->restrict_file_reading(0);
 
 #########################################################
 ## parse_file from handler
