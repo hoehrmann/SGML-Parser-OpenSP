@@ -1,12 +1,9 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.1 2004/09/09 23:02:02 hoehrmann Exp $
+# $Id: Tools.pm,v 1.2 2004/09/09 23:05:31 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
-use strict;
-use warnings;
-
 use strict;
 use warnings;
 use Data::Dumper;
