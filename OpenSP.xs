@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.24 2004/10/01 22:31:02 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.25 2004/11/06 23:40:41 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -418,6 +418,7 @@ void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32
                             const enum ParserEventGeneratorKit::OptionWithArg o)
 {
     SV** svp = hv_fetch(hv, key, klen, 0);
+    SV* rv;
 
     if (!svp || !*svp)
         return;
@@ -429,11 +430,19 @@ void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32
         return;
     }
 
-    if (!SvROK(*svp) || !(SvTYPE(*svp) == SVt_PVAV))
+    if (!SvROK(*svp))
+        return;
+
+    rv = SvRV(*svp);
+
+    if (!rv)
+        return;
+
+    if (!(SvTYPE(rv) == SVt_PVAV))
         return;
 
     // array reference
-    AV* av = (AV*)SvRV(*svp);
+    AV* av = (AV*)rv;
     I32 len = av_len(av);
 
     for (I32 i = 0; i < len; ++i)

@@ -1,6 +1,7 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
 0.99  ...
+	- fixed a bug in handling warnings(qw/multiple args/)
 	- added more sanity checks to typemap
 
 0.98  Sat Oct 02 01:19:04 2004
