@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.2 2004/08/27 05:53:06 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.3 2004/09/04 16:56:22 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -128,7 +128,7 @@ searching.
 
 For each name in @include_params pretend that 
 
-<!ENTITY % name "INCLUDE">
+  <!ENTITY % name "INCLUDE">
 
 occurs at the start of the document type declaration subset in the SGML
 document entity. Since repeated definitions of an entity are ignored,
@@ -138,7 +138,7 @@ If the SGML declaration replaces the reserved name INCLUDE then the new
 reserved name will be the replacement text of the entity. Typically the
 document type declaration will contain 
 
-<!ENTITY % name "IGNORE">
+  <!ENTITY % name "IGNORE">
 
 and will use %name; in the status keyword specification of a marked
 section declaration. In this case the effect of the option will be to
@@ -303,7 +303,7 @@ something like
   * ...
 
 The events closely match those in the generic interface to OpenSP,
-see L<http://openjade.sf.net/doc-1.5.1/generic.htm> for more
+see L<http://openjade.sf.net/doc/generic.htm> for more
 information.
 
 The event names have been changed to lowercase and underscores to separate
@@ -392,7 +392,7 @@ for details.
 
 =head1 SEE ALSO
 
-L<http://openjade.sf.net/doc-1.5.1/generic.htm>
+L<http://openjade.sf.net/doc/generic.htm>
 
 L<http://openajde.sf.net/>
 
