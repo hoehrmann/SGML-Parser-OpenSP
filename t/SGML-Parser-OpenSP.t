@@ -1,10 +1,10 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.10 2004/09/12 17:09:23 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.11 2004/09/13 05:40:50 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 172;
+use Test::More tests => 180;
 use Test::Exception;
 use Encode qw();
 use File::Spec qw();
@@ -93,26 +93,35 @@ lives_ok { $p->parse_file(NO_DOCTYPE) }
 ## Simple Event Handler
 #########################################################
 
-sub TestHandler1::new { bless{},shift }
+# todo: do not call ok from handler, the handler might not
+# be called at all!
+
+sub TestHandler1::new { bless{ok1=>0,ok2=>0,ok3=>0,ok4=>0,ok5=>0,
+                              ok6=>0,ok7=>0,ok8=>0,ok9=>0,oka=>0},shift }
 sub TestHandler1::start_element {
-    isa_ok($_[0], 'TestHandler1');
+    my $s = shift;
+    my $e = shift;
+    
+    return unless defined $s;
+    return unless defined $e;
+    
+    $s->{ok1}++ if UNIVERSAL::isa($s, 'TestHandler1');
 
     # Name
-    ok(defined $_[1], 'got an element');
-    ok(exists $_[1]->{Name}, 'element has name');
-    like($_[1]->{Name}, qr/no-doctype/i, 'name is no-doctype');
+    $s->{ok2}++ if exists $e->{Name};
+    $s->{ok3}++ if $e->{Name} =~ /no-doctype/i;
     
     # Attributes
-    ok(exists $_[1]->{Attributes}, 'has attribute hash');
-    isa_ok($_[1]->{Attributes}, "HASH", 'attribute hash is hash ref');
-    is(scalar(keys(%{$_[1]->{Attributes}})), 0, 'sample has no attributes');
+    $s->{ok4}++ if exists $e->{Attributes};
+    $s->{ok5}++ if UNIVERSAL::isa($e->{Attributes}, "HASH");
+    $s->{ok6}++ if scalar(keys(%{$_[1]->{Attributes}})) == 0;
     
     # Included
-    ok(exists $_[1]->{Included}, 'has included property');
-    is($_[1]->{Included}, 0, 'included is 0');
+    $s->{ok7}++ if exists $e->{Included};
+    $s->{ok8}++ if $e->{Included} == 0;
     
     # ContentType
-    ok(exists $_[1]->{ContentType}, 'has ContentType property');
+    $s->{ok9}++ if exists $e->{ContentType};
 }
 
 my $h1 = TestHandler1->new;
@@ -124,28 +133,52 @@ $p->handler($h1);
 lives_ok { $p->parse_file(NO_DOCTYPE) }
   'basic parser test';
 
+ok($h1->{ok1}, 'self to handler');
+ok($h1->{ok2}, 'has name');
+ok($h1->{ok3}, 'proper name');
+ok($h1->{ok4}, 'has attrs');
+ok($h1->{ok5}, 'attrs hash ref');
+ok($h1->{ok6}, 'proper attrs');
+ok($h1->{ok7}, 'has included');
+ok($h1->{ok8}, 'included == 0');
+ok($h1->{ok9}, 'has content type');
+
 #########################################################
 ## Read from a <LITERAL>
 #########################################################
 
+$h1 = TestHandler1->new;
+
+$p->handler($h1);
 lives_ok { $p->parse_file("<LITERAL><no-doctype></no-doctype>") }
   'reading from a <literal>';
+
+ok($h1->{ok1}, 'self to handler');
+ok($h1->{ok2}, 'has name');
+ok($h1->{ok3}, 'proper name');
+ok($h1->{ok4}, 'has attrs');
+ok($h1->{ok5}, 'attrs hash ref');
+ok($h1->{ok6}, 'proper attrs');
+ok($h1->{ok7}, 'has included');
+ok($h1->{ok8}, 'included == 0');
+ok($h1->{ok9}, 'has content type');
 
 #########################################################
 ## Comments not default
 #########################################################
 
-sub TestHandler2::new         { bless{},shift }
-sub TestHandler2::comment     { die }
+sub TestHandler2::new         { bless{ok1=>0},shift }
+sub TestHandler2::comment     { $_->{ok1}-- }
 
-my $h2 = TestHandler2->new(0);
-
+my $h2 = TestHandler2->new;
 isa_ok($h2, 'TestHandler2');
 
 $p->handler($h2);
 
 lives_ok { $p->parse_file("<LITERAL><no-doctype><!--...--></no-doctype>") }
   'comments not reported by default';
+
+is($h2->{ok1}, 0, 'comments not default');
 
 #########################################################
 ## Comments at user option
@@ -222,7 +255,7 @@ is($h4->{ok4}, 3, "implied end_dtd");
 sub TestHandler5::new         { bless{ok=>0},shift }
 sub TestHandler5::error
 {
-    die unless @_ == 2;
+    return unless @_ == 2;
     $_[0]->{ok}++ if $_[1]->{Message} =~ /:4:13:E:/;
 }
 
@@ -513,9 +546,8 @@ ok(!$p->show_open_elements, 'show_open_elements turned off');
 ## newlines in enum attribute
 #########################################################
 
-=pod
-
-sub TestHandler12::new{bless{p=>$_[1],ok1=>0,ok2=>0,ok3=>0,ok4=>0},shift}
+sub TestHandler12::new{bless{p=>$_[1],ok1=>0,ok2=>0,ok3=>0,ok4=>0,
+                             ok5=>0,ok6=>0,ok7=>0,ok8=>0},shift}
 sub TestHandler12::error
 {
     my $s = shift;
@@ -539,23 +571,54 @@ sub TestHandler12::error
     
     return if $@;
     $s->{ok2}++;
+    
+    if ($m->{primary_message}{Number} == 122)
+    {
+        $s->{ok3}++ if $m->{primary_message}{ColumnNumber} == 8;
+        $s->{ok4}++ if $m->{primary_message}{LineNumber} == 8;
+        $s->{ok5}++ if $m->{primary_message}{Text} =~
+          /.+\n.+/;
+    }
+    elsif ($m->{primary_message}{Number} == 131)
+    {
+        $s->{ok6}++ if $m->{primary_message}{ColumnNumber} == 13;
+        $s->{ok7}++ if $m->{primary_message}{LineNumber} == 8;
+        $s->{ok8}++ if $m->{primary_message}{Text} =~
+        /.+\n.+/;
+    }
 }
 
 my $h12 = TestHandler12->new($p);
 $p->handler($h12);
+$p->catalogs(TEST_CATALOG);
 $p->show_error_numbers(1);
 
 lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
-<!DOCTYPE no-doctype [
-  <!ELEMENT no-doctype - - (#PCDATA)>
-  <!ATTLIST no-doctype x (x|y) #IMPLIED>
-]><no-doctype x='&#10;&#13;'></no-doctype>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+</head>
+<body>
+<p dir="&#xa;">...</p>
+</body>
+</html>
 __DOC__
-} '...';
+} 'newlines in enum attr values';
 
+cmp_ok($h12->{ok1}, '>=', 2, 'two errors');
+cmp_ok($h12->{ok2}, '>=', 2, 'two errors split');
+
+ok($h12->{ok3}, 'correct col 122');
+ok($h12->{ok4}, 'correct lin 122');
+ok($h12->{ok5}, 'correct text 122');
+ok($h12->{ok6}, 'correct col 131');
+ok($h12->{ok7}, 'correct lin 131');
+ok($h12->{ok8}, 'correct text 131');
+
+$p->catalogs([]);
 $p->show_error_numbers(0);
-
-=cut
 
 #########################################################
 ## Parser refcounting
@@ -582,11 +645,9 @@ lives_ok
     undef $x;
 } 'parser refcounting 2';
 
-
-
 __END__
 
 Todo:
 
   * need to fix some tests so that handler don't ok()
-
+  * 
