@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.19 2004/09/24 01:06:39 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.20 2004/09/24 01:16:23 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -30,13 +30,17 @@ extern "C"
 
 class SgmlParserOpenSP : private SGMLApplication {
 public:
-
+    // ...
     SgmlParserOpenSP();
+
+public:
+    // ...
     void parse(SV* file_sv);
-    SV* get_location();
+    SV*  get_location();
     void halt();
 
-    SV* m_self;
+    // ...
+    SV*  m_self;
 
 private:
     // OpenSP event handler
@@ -62,32 +66,36 @@ private:
     void openEntityChange      (const OpenEntityPtr&              p);
 
     // ...
-    void updatePosition(const SGMLApplication::Position pos);
-    void dispatchEvent(const char* name, const HV* hv);
-    bool handler_can(const char* method);
+    void updatePosition        (const SGMLApplication::Position   pos);
+    void dispatchEvent         (const char*                       name,
+                                const HV* hv);
+    bool handler_can           (const char*                       method);
 
     // ...
-    SV* _cs2sv         (const SGMLApplication::CharString s);
-    HV* _location2hv   (const SGMLApplication::Location l);
-    HV* _notation2hv   (const SGMLApplication::Notation n);
-    HV* _externalid2hv (const SGMLApplication::ExternalId id);
-    HV* _entity2hv     (const SGMLApplication::Entity e);
-    HV* _attributes2hv (const SGMLApplication::Attribute* attrs, const size_t n);
-    HV* _attribute2hv  (const SGMLApplication::Attribute a);
+    SV* _cs2sv                 (const SGMLApplication::CharString s);
+    HV* _location2hv           (const SGMLApplication::Location   l);
+    HV* _notation2hv           (const SGMLApplication::Notation   n);
+    HV* _externalid2hv         (const SGMLApplication::ExternalId id);
+    HV* _entity2hv             (const SGMLApplication::Entity     e);
+    HV* _attributes2hv         (const SGMLApplication::Attribute* attrs,
+                                const size_t                      n);
+    HV* _attribute2hv          (const SGMLApplication::Attribute  a);
+
+    // ...
     bool _hv_fetch_SvTRUE(HV* hv, const char* key, const I32 klen);
     void _hv_fetch_pk_setOption(HV* hv, const char* key, const I32 klen,
                                 ParserEventGeneratorKit& pk,
                                 const enum ParserEventGeneratorKit::OptionWithArg o);
 
     // ...
-    SV* m_handler;
-    bool m_parsing;
+    SV*                            m_handler;
+    bool                           m_parsing;
     SGMLApplication::Position      m_pos;
     SGMLApplication::OpenEntityPtr m_openEntityPtr;
-    EventGenerator* m_egp;
+    EventGenerator*                m_egp;
 
     // ...
-    PerlInterpreter* my_perl;
+    PerlInterpreter*               my_perl;
 };
 
 ///////////////////////////////////////////////////////////////////////////
