@@ -1,11 +1,13 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.5 2004/09/06 00:08:41 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.6 2004/09/09 23:44:06 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
 use strict;
 use warnings;
+use SGML::Parser::OpenSP::Tools qw();
+
 use base qw(Class::Accessor);
 
 our $VERSION = '0.02';
@@ -29,6 +31,25 @@ __PACKAGE__->mk_accessors(qw/
     include_params
     active_links
 /);
+
+# todo: needs documentation
+
+sub split_message
+{
+    my $self = shift;
+    my $mess = shift;
+    my $loca = $self->get_location;
+    my $name = $loca->{FileName};
+
+    return SGML::Parser::OpenSP::Tools::split_message
+    (
+        $mess->{Message},
+        $loca->{FileName},
+        $self->show_open_entities,
+        $self->show_error_numbers,
+        $self->show_open_elements
+    );
+}
 
 1;
 
