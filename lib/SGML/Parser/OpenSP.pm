@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.7 2004/09/13 07:53:26 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.8 2004/09/13 08:28:41 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -188,7 +188,6 @@ The following values can be used to enable warnings:
 
 =item xml 
 
-
 Warn about constructs that are not allowed by XML. 
 
 =item mixed 
@@ -227,7 +226,6 @@ Warn about empty start and end-tags.
 
 =item net 
 
-
 Warn about net-enabling start-tags and null end-tags. 
 
 =item min-tag 
@@ -252,7 +250,6 @@ won't get the warning.
 Warn about notations for which no system identifier could be generated. 
 
 =item all 
-
 
 Warn about conditions that should usually be avoided (in the opinion of
 the author). Equivalent to: C<mixed>, C<should>, C<default>, C<undefined>,
@@ -440,11 +437,15 @@ for details.
 
 =head1 SEE ALSO
 
-L<http://openjade.sf.net/doc/generic.htm>
+=over 4
 
-L<http://openajde.sf.net/>
+=item * L<http://openjade.sf.net/doc/generic.htm>
 
-L<http://sf.net/projects/spo/>
+=item * L<http://openajde.sf.net/>
+
+=item * L<http://sf.net/projects/spo/>
+
+=back
 
 =head1 AUTHOR AND COPYRIGHT
 
