@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.4 2004/09/04 17:04:22 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.5 2004/09/06 00:08:41 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -81,7 +81,7 @@ false.
 Show the generic identifiers of open elements in error messages.
 The default is false.
 
-=itm $p->show_error_numbers([$bool])
+=item $p->show_error_numbers([$bool])
 
 Show message numbers in error messages.
 
