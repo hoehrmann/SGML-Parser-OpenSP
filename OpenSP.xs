@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.7 2004/09/08 19:36:04 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.8 2004/09/09 02:07:26 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?
@@ -544,44 +544,44 @@ void SgmlParserOpenSP::parse_file(SV* file_sv)
 
     // Boolean Options
     if (_hv_fetch_SvTRUE(hv, "show_open_entities", 18))
-        pk.setOption(ParserEventGeneratorKit::Option::showOpenEntities);
+        pk.setOption(ParserEventGeneratorKit::showOpenEntities);
 
     if (_hv_fetch_SvTRUE(hv, "show_open_elements", 18))
-        pk.setOption(ParserEventGeneratorKit::Option::showOpenElements);
+        pk.setOption(ParserEventGeneratorKit::showOpenElements);
 
     if (_hv_fetch_SvTRUE(hv, "show_error_numbers", 18))
-        pk.setOption(ParserEventGeneratorKit::Option::showErrorNumbers);
+        pk.setOption(ParserEventGeneratorKit::showErrorNumbers);
 
     if (_hv_fetch_SvTRUE(hv, "output_comment_decls", 20))
-        pk.setOption(ParserEventGeneratorKit::Option::outputCommentDecls);
+        pk.setOption(ParserEventGeneratorKit::outputCommentDecls);
 
     if (_hv_fetch_SvTRUE(hv, "output_marked_sections", 22))
-        pk.setOption(ParserEventGeneratorKit::Option::outputMarkedSections);
+        pk.setOption(ParserEventGeneratorKit::outputMarkedSections);
 
     if (_hv_fetch_SvTRUE(hv, "output_general_entities", 23))
-        pk.setOption(ParserEventGeneratorKit::Option::outputGeneralEntities);
+        pk.setOption(ParserEventGeneratorKit::outputGeneralEntities);
 
     if (_hv_fetch_SvTRUE(hv, "map_catalog_document", 20))
-        pk.setOption(ParserEventGeneratorKit::Option::mapCatalogDocument);
+        pk.setOption(ParserEventGeneratorKit::mapCatalogDocument);
 
     if (_hv_fetch_SvTRUE(hv, "restrict_file_reading", 21))
-        pk.setOption(ParserEventGeneratorKit::Option::restrictFileReading);
+        pk.setOption(ParserEventGeneratorKit::restrictFileReading);
 
     // Options with argument
     _hv_fetch_pk_setOption(hv, "warnings", 8, pk,
-        ParserEventGeneratorKit::OptionWithArg::enableWarning);
+        ParserEventGeneratorKit::enableWarning);
 
     _hv_fetch_pk_setOption(hv, "catalogs", 8, pk,
-        ParserEventGeneratorKit::OptionWithArg::addCatalog);
+        ParserEventGeneratorKit::addCatalog);
 
     _hv_fetch_pk_setOption(hv, "search_dirs", 11, pk,
-        ParserEventGeneratorKit::OptionWithArg::addSearchDir);
+        ParserEventGeneratorKit::addSearchDir);
 
     _hv_fetch_pk_setOption(hv, "include_params", 14, pk,
-        ParserEventGeneratorKit::OptionWithArg::includeParam);
+        ParserEventGeneratorKit::includeParam);
 
     _hv_fetch_pk_setOption(hv, "active_links", 12, pk,
-        ParserEventGeneratorKit::OptionWithArg::activateLink);
+        ParserEventGeneratorKit::activateLink);
 
     char* file = SvPV_nolen(file_sv);
 
@@ -925,22 +925,22 @@ void SgmlParserOpenSP::markedSectionStart(const MarkedSectionStartEvent& e)
 
         switch (e.params[i].type)
         {
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::temp:
+        case SGMLApplication::MarkedSectionStartEvent::Param::temp:
             hv_store(param, "Type", 6, newSVpvn("temp", 4), HvvType);
             break;
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::include:
+        case SGMLApplication::MarkedSectionStartEvent::Param::include:
             hv_store(param, "Type", 6, newSVpvn("include", 7), HvvType);
             break;
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::rcdata:
+        case SGMLApplication::MarkedSectionStartEvent::Param::rcdata:
             hv_store(param, "Type", 6, newSVpvn("rcdata", 6), HvvType);
             break;
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::cdata:
+        case SGMLApplication::MarkedSectionStartEvent::Param::cdata:
             hv_store(param, "Type", 6, newSVpvn("cdata", 5), HvvType);
             break;
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::ignore:
+        case SGMLApplication::MarkedSectionStartEvent::Param::ignore:
             hv_store(param, "Type", 6, newSVpvn("ignore", 6), HvvType);
             break;
-        case SGMLApplication::MarkedSectionStartEvent::Param::Type::entityRef:
+        case SGMLApplication::MarkedSectionStartEvent::Param::entityRef:
             hv_store(param, "Type", 6, newSVpvn("entityRef", 9), HvvType);
             hv_store(param, "EntityName", 10, _cs2sv(e.params[i].entityName), HvvEntityName);
             break;
