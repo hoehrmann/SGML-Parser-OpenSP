@@ -1,6 +1,6 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.6 2004/09/12 14:35:09 hoehrmann Exp $
+# $Id: Tools.pm,v 1.7 2004/10/01 16:35:26 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
@@ -198,7 +198,7 @@ SGML::Parser::OpenSP::Tools - Tools to process OpenSP output
 
 =head1 DESCRIPTION
 
-...
+Routines to post-process OpenSP event data.
 
 =head1 UTILITY FUNCTIONS
 

@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.18 2004/09/23 19:13:51 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.19 2004/10/01 16:35:26 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -91,6 +91,8 @@ type of an event are called with suitable parameters.
 
 Report events to the blessed reference $handler.
 
+=head2 ERROR MESSAGE FORMAT
+
 =item $p->show_open_entities([$bool])
 
 Describe open entities in error messages. Error messages always include
@@ -106,6 +108,8 @@ The default is false.
 
 Show message numbers in error messages.
 
+=head2 GENERATED EVENTS
+
 =item $p->output_comment_decls([$bool])
 
 Generate C<comment_decl> events. The default is false.
@@ -118,6 +122,8 @@ C<marked_section_end>, C<ignored_chars>). The default is false.
 =item $p->output_general_entities([$bool])
 
 Generate C<general_entity> events. The default is false.
+
+=head2 IO SETTINGS
 
 =item $p->map_catalog_document([$bool])
 
@@ -132,12 +138,6 @@ method and the C<SGML_SEARCH_PATH> environment variable). You should turn
 this option on and configure the search paths accordingly if you intend to
 process untrusted resources. The default is false.
 
-=back
-
-=head2 OTHER OPTIONS
-
-=over 4
-
 =item $p->catalogs([@catalogs])
 
 Map public identifiers and entity names to system identifiers using the
@@ -151,6 +151,8 @@ Search the specified directories for files specified in system identifiers.
 Multiple values options are allowed. See the description of the osfile
 storage manager in the OpenSP documentation for more information about file
 searching.
+
+=head2 PROCESSING OPTIONS
 
 =item $p->include_params([@include_params])
 
@@ -596,6 +598,24 @@ a hash reference with the following properties:
   FileName     => ..., # name of the file
 
 These can be C<undef> or an empty string.
+
+=head1 POST-PROCESSING ERROR MESSAGES
+
+OpenSP returns error messages in form of a string rather than individual
+components of the message like line numbers or message text. The
+C<split_message> method on the parser object can be used to post-process
+these error message strings as reliable as possible. It can be used e.g.
+from an error event handler if the parser object is accessible like
+
+  sub error
+  {
+    my $self = shift;
+    my $erro = shift;
+    my $mess = $self->{parser}->split_message($erro);
+  }
+
+See the documentation of C<split_message> in the
+L<SGML::Parser::OpenSP::Tools> documentation.
 
 =head1 UNICODE SUPPORT
 
