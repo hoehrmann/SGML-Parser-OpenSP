@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.13 2004/09/13 13:51:46 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.14 2004/09/14 06:36:43 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -480,8 +480,6 @@ at runtime or not compile.
 Individual warnings for -wxml are not listed in this POD.
 
 The typemap is crap.
-
-The Makefile.PL is crap.
 
 =head1 BUG REPORTS
 
