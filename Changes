@@ -1,6 +1,11 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
 0.99  ...
+	- todo: UTF-8 flag magic for parse_string
+	- todo: enhanced parse_string to accept options
+	- todo: added parse_string tests
+	- todo: added parse_string documentation
+	- added parse_string and pass_file_descriptor option
 	- fixed a bug in handling warnings(qw/multiple args/)
 	- added more sanity checks to typemap
 

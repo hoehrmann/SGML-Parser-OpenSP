@@ -1,12 +1,13 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.22 2004/10/08 18:08:01 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.23 2004/11/07 02:18:26 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
 use strict;
 use warnings;
 use SGML::Parser::OpenSP::Tools qw();
+use File::Temp                  qw();
 
 use base qw(Class::Accessor);
 
@@ -30,6 +31,7 @@ __PACKAGE__->mk_accessors(qw/
     search_dirs
     include_params
     active_links
+    pass_file_descriptor
 /);
 
 sub split_message
@@ -48,6 +50,44 @@ sub split_message
         $self->show_open_elements
     );
 }
+
+sub parse_string
+{
+    my $self = shift;
+    my $text = shift;
+    
+    # high security on systems that support it
+    File::Temp->safe_level(File::Temp::HIGH);
+    
+    # create temp file, this would croak if it fails, so
+    # there is no need for us to check the return value
+    my $fh = File::Temp->new();
+    
+    # ...
+    File::Temp::unlink0($fh, $fh->filename);
+    
+    # store content
+    print $fh $text;
+    
+    # seek to start
+    seek $fh, 0, 0;
+    
+    if ($self->pass_file_descriptor)
+    {
+        my $no = fileno($fh);
+        if (!defined $no)
+        {
+            warn("fileno(...) on temporary file handle failed\n");
+            return;
+        }
+        $self->parse("<OSFD>" . );
+    }
+    else
+    {
+        $self->parse("<OSFILE>" . $fh->filename);
+    }
+}
+
 
 1;
 
