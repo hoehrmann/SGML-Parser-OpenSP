@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.3 2004/08/27 04:50:48 tbe Exp $
+// $Id: OpenSP.xs,v 1.4 2004/08/27 05:53:05 hoehrmann Exp $
 
 // todo: add THX stuff?
 // todo: implement halt()?

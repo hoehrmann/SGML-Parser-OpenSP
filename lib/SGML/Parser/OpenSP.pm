@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.1 2004/08/27 04:50:49 tbe Exp $
+# $Id: OpenSP.pm,v 1.2 2004/08/27 05:53:06 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
