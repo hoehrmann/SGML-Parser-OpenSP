@@ -8,3 +8,6 @@ t/SGML-Parser-OpenSP.t
 lib/SGML/Parser/OpenSP.pm
 lib/SGML/Parser/OpenSP/Tools.pm
 samples/no-doctype.xml
+samples/test.soc
+samples/xml.dcl
+samples/xhtml1-strict-s.dtd
