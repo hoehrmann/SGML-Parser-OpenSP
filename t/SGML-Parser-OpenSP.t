@@ -1,10 +1,10 @@
 # SGML-Parser-OpenSP.t -- ... 
 #
-# $Id: SGML-Parser-OpenSP.t,v 1.8 2004/09/11 08:54:44 hoehrmann Exp $
+# $Id: SGML-Parser-OpenSP.t,v 1.9 2004/09/12 09:50:36 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 157;
+use Test::More tests => 166;
 use Test::Exception;
 use Encode qw();
 use File::Spec qw();
@@ -337,24 +337,48 @@ is($h7->{ok7}, 1, 'correct data');
 ## restricted reading
 #########################################################
 
-sub TestHandler8::new{bless{},shift}
-sub TestHandler8::start_element{die}
+sub TestHandler8::new{bless{ok1=>0,ok2=>0},shift}
+sub TestHandler8::error {
+    my $s = shift;
+    my $e = shift;
+    
+    return unless defined $s and defined $e;
+    
+    $s->{ok2}++ if $e->{Message} =~ /^E:\s+/ and
+                   $e->{Type} eq 'otherError';
+}
+sub TestHandler8::start_element{shift->{ok1}--}
 
-$p->handler(TestHandler8->new);
+my $h8 = TestHandler8->new;
+
+$p->handler($h8);
 $p->restrict_file_reading(1);
 
 lives_ok { $p->parse_file("samples/../samples/no-doctype.xml") }
   'must not read paths with ..';
-  
+
+is($h8->{ok1}, 0, 'must not read paths with ..');
+isnt($h8->{ok2}, 0, 'must not read paths with ..');
+$h8->{ok1} = 0;
+$h8->{ok2} = 0;
+
 lives_ok { $p->parse_file("./samples/no-doctype.xml") }
   'must not read paths with ./';
+
+is($h8->{ok1}, 0, 'must not read paths with ./');
+isnt($h8->{ok2}, 0, 'must not read paths with ./');
+$h8->{ok1} = 0;
+$h8->{ok2} = 0;
 
 my $sd = File::Spec->catfile(File::Spec->rel2abs('.'), 'samples');
 
 $p->search_dirs($sd);
 
-dies_ok { $p->parse_file(File::Spec->catfile($sd, 'no-doctype.xml')) }
+lives_ok { $p->parse_file(File::Spec->catfile($sd, 'no-doctype.xml')) }
   'allow to read sample dir in restricted mode';
+
+isnt($h8->{ok1}, 0, 'allow to read sample dir in restricted mode');
+is($h8->{ok2}, 0, 'allow to read sample dir in restricted mode');
 
 $p->search_dirs([]);
 $p->restrict_file_reading(0);
@@ -363,14 +387,18 @@ $p->restrict_file_reading(0);
 ## parse_file from handler
 #########################################################
 
-sub TestHandler9::new{bless{p=>$_[1]},shift}
+sub TestHandler9::new{bless{p=>$_[1],ok1=>0},shift}
 sub TestHandler9::start_element{shift->{p}->parse_file(NO_DOCTYPE)}
+sub TestHandler9::end_element{shift->{ok1}--}
 
-my $h9 = TestHandler9->new;
+my $h9 = TestHandler9->new($p);
+
 $p->handler($h9);
 
 dies_ok { $p->parse_file(NO_DOCTYPE) }
   'parse_file must not be called from handler';
+
+is($h9->{ok1}, 0, 'end_element not called');
 
 #########################################################
 ## non-scalar to parse_file
@@ -410,6 +438,47 @@ ok(!$p->show_open_elements, 'show_open_elements turned off');
 ## newlines in enum attribute
 #########################################################
 
+=pod
+
+sub TestHandler11::new{bless{p=>$_[1],ok1=>0,ok2=>0,ok3=>0,ok4=>0},shift}
+sub TestHandler11::error
+{
+    my $s = shift;
+    my $e = shift;
+}
+
+my $h11 = TestHandler11->new($p);
+$p->handler($h11);
+
+lives_ok { $p->parse_file("<LITERAL>" . <<"__DOC__");
+<!DOCTYPE no-doctype [
+  <!ELEMENT no-doctype - - (#PCDATA)>
+  <!ATTLIST no-doctype x (x|y) #IMPLIED>
+]><no-doctype x='&#xa;'></no-doctype>
+__DOC__
+} '...';
+
+=cut
+
+#########################################################
+## Parser refcounting
+#########################################################
+
+lives_ok
+{
+    my $x = SGML::Parser::OpenSP->new;
+    my $y = \$x;
+    undef $x;
+    undef $y;
+} 'parser refcounting 1';
+
+lives_ok
+{
+    my $x = SGML::Parser::OpenSP->new;
+    my $y = \$x;
+    undef $y;
+    undef $x;
+} 'parser refcounting 2';
 
 
 
