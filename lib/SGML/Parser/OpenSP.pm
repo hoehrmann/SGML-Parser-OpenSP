@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.9 2004/09/13 09:29:34 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.10 2004/09/13 13:32:38 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -407,15 +407,75 @@ information refer to the OpenSP manual.
 
 =back
 
+=head1 ENVIRONMENT VARIABLES
+
+OpenSP supports a number of environment variables to control specific
+processing aspects such as C<SGML_SEARCH_PATH> or C<SP_CHARSET_FIXED>.
+Portable applications need to ensure that these are set prior to
+loading the OpenSP library into memory which happens when the XS code
+is loaded. This means you need to wrap the code into a C<BEGIN> block:
+
+  BEGIN { $ENV{SP_CHARSET_FIXED} = 1; }
+  use SGML::Parser::OpenSP;
+  # ...
+  
+Otherwise changes to the environment might not propagate to OpenSP.
+This applies specifically to Win32 systems. 
+
+=over 4
+
+=item SGML_SEARCH_PATH
+
+See L<http://openjade.sourceforge.net/doc/sysid.htm>.
+
+=item SP_HTTP_USER_AGENT
+
+The C<User-Agent> header for HTTP requests.
+
+=item SP_HTTP_ACCEPT
+
+The C<Accept> header for HTTP requests.
+
+=item SP_MESSAGE_FORMAT
+
+Enable run time selection of message format, Value is one of C<XML>,
+C<NONE>, C<TRADITIONAL>. Whether this will have an effect depends
+on a compile time setting which might not be enabled in your OpenSP
+build. This module assumes that no such support was compiled in.
+
+=item SGML_CATALOG_FILES
+
+=item SP_USE_DOCUMENT_CATALOG
+
+See L<http://openjade.sourceforge.net/doc/catalog.htm>.
+
+=item SP_SYSTEM_CHARSET
+
+=item SP_CHARSET_FIXED
+
+=item SP_BCTF
+
+=item SP_ENCODING
+
+See L<http://openjade.sourceforge.net/doc/charset.htm>.
+
+=back
+
+Note that you can use the C<search_dirs> method instead of using
+C<SGML_SEARCH_PATH> and the C<catalogs> method instead of using
+C<SGML_CATALOG_FILES> and attributes on storage object specifications
+for C<SP_BCTF> and C<SP_ENCODING> respectively. For example, if
+C<SP_CHARSET_FIXED> is set to C<1> you can use
+
+  $p->parse_file("<OSFILE encoding='UTF-8'>example.xhtml");
+  
+to process C<example.xhtml> using the C<UTF-8> character encoding.
+
 =head1 KNOWN ISSUES
 
 OpenSP must be compiled with C<SP_MULTI_BYTE> I<defined> and with
 C<SP_WIDE_SYSTEM> I<undefined>, this module will otherwise break
 at runtime or not compile.
-
-OpenSP supports a number of environment variables for configuration,
-this module currently does not change the environment, you are thus
-responsible to set (or unset) them as you find appropriate.
 
 Individual warnings for -wxml are not listed in this POD.
 
