@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.26 2005/08/14 16:22:56 tbe Exp $
+# $Id: OpenSP.pm,v 1.27 2005/08/14 17:26:08 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -34,29 +34,6 @@ __PACKAGE__->mk_accessors(qw/
     active_links
     pass_file_descriptor
 /);
-
-#
-# Accessor (overridden from Class::Accessor default).
-sub pass_file_descriptor
-{
-    my $self   = shift;
-    my $passfd = shift; # boolean; pass data as fd or tmpfile?
-
-    # Default to true if not set.
-    if (not defined $self->_pass_file_descriptor_accessor()) {
-        $self->_pass_file_descriptor_accessor(1);
-    }
-
-    # Win32 can't pass fd's around so force off for that platform.
-    if ($^O eq 'MSWin32') {
-        carp "Passing file descriptors not supported on this platform (Win32)."
-          if $passfd;
-        $passfd = 0;
-    }
-
-    return $self->_pass_file_descriptor_accessor($passfd) if defined $passfd;
-    return $self->_pass_file_descriptor_accessor();
-}
 
 sub split_message
 {
@@ -212,10 +189,10 @@ searching.
 
 =item $p->pass_file_descriptor([$bool])
 
-Pass the input data down to the guts of OpenSP using the C<OSFD> storage
-manager (if true) or the C<OSFILE> storage manager (if false). This amounts
-to the difference between passing a file descriptor and a (temporary) file
-name.
+Instruct C<parse_string> to pass the input data down to the guts of OpenSP
+using the C<OSFD> storage manager (if true) or the C<OSFILE> storage manager
+(if false). This amounts to the difference between passing a file descriptor
+and a (temporary) file name.
 
 The default is true except on platforms, such as Win32, which are known to
 not support passing file descriptors around in this manner. On platforms
