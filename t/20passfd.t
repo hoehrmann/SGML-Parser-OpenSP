@@ -1,6 +1,6 @@
 # 20passfd.t -- ...
 #
-# $Id: 20passfd.t,v 1.1 2005/08/14 14:57:49 tbe Exp $
+# $Id: 20passfd.t,v 1.2 2005/08/14 16:26:38 tbe Exp $
 
 use strict;
 use warnings;
@@ -10,6 +10,11 @@ use File::Spec qw();
 
 use constant NO_DOCTYPE   => File::Spec->catfile('samples', 'no-doctype.xml');
 use constant TEST_CATALOG => File::Spec->catfile('samples', 'test.soc');
+
+# Get input data for parsing a string.
+open TESTDATA, NO_DOCTYPE;
+our $TESTDATA = <TESTDATA>;
+close TESTDATA;
 
 BEGIN { use_ok('SGML::Parser::OpenSP') };
 require_ok('SGML::Parser::OpenSP');
@@ -44,7 +49,7 @@ undef $p;
 $p = new SGML::Parser::OpenSP;
 $p->handler(bless{}, 'NullHandler');
 $p->pass_file_descriptor(0);
-lives_ok { $p->parse(NO_DOCTYPE) } 'parse by filename';
+lives_ok { $p->parse_string($TESTDATA) } 'parse by filename';
 undef $p;
 
 #
@@ -54,8 +59,12 @@ SKIP: {
   $p = new SGML::Parser::OpenSP;
   $p->handler(bless{}, 'NullHandler');
   $p->pass_file_descriptor(1);
-  lives_ok { $p->parse(NO_DOCTYPE) } 'parse by filename';
+  lives_ok { $p->parse_string($TESTDATA) } 'parse by fd';
   undef $p;
 }
+
+
+
+
 
 
