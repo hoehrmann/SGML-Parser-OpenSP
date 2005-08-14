@@ -6,9 +6,9 @@ my %options;
 if ($^O eq "MSWin32")
 {
     $options{LIBS} = "-l" . prompt("Where is the OpenSP link library?",
-                                   "E:\\osp\\lib\\Release\\osp152.lib");
+                                   "T:\\osp\\lib\\Release\\osp152.lib");
     $options{CC}   =        prompt("Which compiler should be used?",
-                                   "cl -TP -EHsc -IE:/osp/");
+                                   "cl -TP -EHsc -IT:/osp/");
 }
 else
 {
