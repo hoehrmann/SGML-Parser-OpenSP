@@ -1,11 +1,12 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.24 2004/11/07 02:21:21 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.25 2005/08/14 14:57:49 tbe Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
 use strict;
 use warnings;
+use Carp;
 use SGML::Parser::OpenSP::Tools qw();
 use File::Temp                  qw();
 
@@ -33,6 +34,29 @@ __PACKAGE__->mk_accessors(qw/
     active_links
     pass_file_descriptor
 /);
+
+#
+# Accessor (overridden from Class::Accessor default).
+sub pass_file_descriptor
+{
+    my $self   = shift;
+    my $passfd = shift; # boolean; pass data as fd or tmpfile?
+
+    # Default to true if not set.
+    if (not defined $self->_pass_file_descriptor_accessor()) {
+        $self->_pass_file_descriptor_accessor(1);
+    }
+
+    # Win32 can't pass fd's around so force off for that platform.
+    if ($^O eq 'MSWin32') {
+        carp "Passing file descriptors not supported on this platform (Win32)."
+          if $passfd;
+        $passfd = 0;
+    }
+
+    return $self->_pass_file_descriptor_accessor($passfd) if defined $passfd;
+    return $self->_pass_file_descriptor_accessor();
+}
 
 sub split_message
 {
@@ -62,32 +86,32 @@ sub parse_string
     # create temp file, this would croak if it fails, so
     # there is no need for us to check the return value
     my $fh = File::Temp->new();
-    
-    # ...
-    File::Temp::unlink0($fh, $fh->filename);
-    
+
+    # Unlink (safely) tmpfile if we don't need the filename.
+    File::Temp::unlink0($fh, $fh->filename)
+        if $self->pass_file_descriptor;
+
     # store content
     print $fh $text;
-    
+
     # seek to start
     seek $fh, 0, 0;
-    
-    if ($self->pass_file_descriptor)
+
+    if (not $self->pass_file_descriptor)
     {
-        my $no = fileno($fh);
-        if (!defined $no)
-        {
-            warn("fileno(...) on temporary file handle failed\n");
-            return;
-        }
-        $self->parse("<OSFD>" . $no);
+        $self->parse('<OSFILE>' . $fh->filename);
     }
     else
     {
-        $self->parse("<OSFILE>" . $fh->filename);
+        my $no = fileno $fh;
+        unless (defined $no)
+        {
+            carp "fileno() on temporary file handle failed.\n";
+            return;
+        }
+        $self->parse('<OSFD>' . $no);
     }
 }
-
 
 1;
 
@@ -189,6 +213,24 @@ Search the specified directories for files specified in system identifiers.
 Multiple values options are allowed. See the description of the osfile
 storage manager in the OpenSP documentation for more information about file
 searching.
+
+=item $p->pass_file_descriptor([$bool])
+
+Pass the input data down to the guts of OpenSP using the C<OSFD> storage
+manager (if true) or the C<OSFILE> storage manager (if false). This amounts
+to the difference between passing a file descriptor and a (temporary) file
+name.
+
+The default is true except on platforms, such as Win32, which are known to
+not support passing file descriptors around in this manner. On platforms
+which support it you can call this method with a false parameter to force
+use of temporary file names instead.
+
+In general, this will do the right thing on its own so it's best to
+consider this an internal method. If your platform is such that you have
+to force use of the OSFILE storage manager, please report it as a bug
+and include the values of C<$^O>, C<$Config{archname}>, and a description
+of the platform (e.g. "Windows Vista Service Pack 42").
 
 =head2 PROCESSING OPTIONS
 
