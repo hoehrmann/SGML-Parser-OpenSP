@@ -1,64 +1,46 @@
 # 20passfd.t -- ...
 #
-# $Id: 20passfd.t,v 1.3 2005/08/14 17:36:35 hoehrmann Exp $
+# $Id: 20passfd.t,v 1.4 2005/08/14 18:07:19 hoehrmann Exp $
 
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 7;
 use Test::Exception;
 use File::Spec qw();
 
 use constant NO_DOCTYPE   => File::Spec->catfile('samples', 'no-doctype.xml');
 use constant TEST_CATALOG => File::Spec->catfile('samples', 'test.soc');
 
-# Get input data for parsing a string.
-open TESTDATA, NO_DOCTYPE;
-our $TESTDATA = <TESTDATA>;
-close TESTDATA;
-
 BEGIN { use_ok('SGML::Parser::OpenSP') };
 require_ok('SGML::Parser::OpenSP');
 my $p = SGML::Parser::OpenSP->new;
 isa_ok($p, 'SGML::Parser::OpenSP');
 
+sub TestHandler20::new { bless{ok1=>0},shift }
+sub TestHandler20::start_element { shift->{ok1}++ }
 
-#
-# Check default and return values.
-
-# Default.
-my $ret = $p->pass_file_descriptor;
-ok(defined $ret, 'default is set');
-ok($ret == 1, 'default is true');
-
-# Set true.
-$ret = 0; $ret = $p->pass_file_descriptor(1);
-ok(defined $ret, 'set true returns defined value');
-ok($ret == 1, 'set true returns value');
-
-# Set false.
-$ret = 1; $ret = $p->pass_file_descriptor(0);
-ok(defined $ret, 'set false returns defined value');
-ok($ret == 0, 'set false returns value');
-
-# Cleanup parser.
-undef $p;
-
+sub TestHandler21::new { bless{ok1=>0},shift }
+sub TestHandler21::start_element { shift->{ok1}++ }
 
 #
 # Check pass as filename (should work on all platforms).
-$p = new SGML::Parser::OpenSP;
-$p->handler(bless{}, 'NullHandler');
+$p = SGML::Parser::OpenSP->new;
+my $h1 = TestHandler20->new;
+$p->handler($h1);
 $p->pass_file_descriptor(0);
-lives_ok { $p->parse_string($TESTDATA) } 'parse by filename';
+lives_ok { $p->parse_string("<no-doctype></no-doctype>") } 'parse_string with temp file name';
+is($h1->{ok1}, 1, "temp file name handler called");
 undef $p;
 
 #
 # Check pass as file descriptor (not on Win32).
 SKIP: {
-  skip 'fd not supported on this platform.', 1 if $^O eq 'MSWin32';
-  $p = new SGML::Parser::OpenSP;
-  $p->handler(bless{}, 'NullHandler');
+  skip 'passing fds for temp files not supported on Win32', 2 if $^O eq 'MSWin32';
+  $p = SGML::Parser::OpenSP->new;
+  my $h2 = TestHandler21->new;
+  $p->handler($h2);
   $p->pass_file_descriptor(1);
-  lives_ok { $p->parse_string($TESTDATA) } 'parse by fd';
+  lives_ok { $p->parse_string("<no-doctype></no-doctype>") } 'parse by fd';
+  is($h2->{ok1}, 1, "temp file descriptor handler called");
   undef $p;
 }
