@@ -1,6 +1,6 @@
 # 20passfd.t -- ...
 #
-# $Id: 20passfd.t,v 1.2 2005/08/14 16:26:38 tbe Exp $
+# $Id: 20passfd.t,v 1.3 2005/08/14 17:36:35 hoehrmann Exp $
 
 use strict;
 use warnings;
@@ -55,16 +55,10 @@ undef $p;
 #
 # Check pass as file descriptor (not on Win32).
 SKIP: {
-  skip 'fd not supported on this platform.', 2 if $^O eq 'Win32';
+  skip 'fd not supported on this platform.', 1 if $^O eq 'MSWin32';
   $p = new SGML::Parser::OpenSP;
   $p->handler(bless{}, 'NullHandler');
   $p->pass_file_descriptor(1);
   lives_ok { $p->parse_string($TESTDATA) } 'parse by fd';
   undef $p;
 }
-
-
-
-
-
-
