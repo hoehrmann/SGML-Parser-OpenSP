@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.25 2005/08/14 14:57:49 tbe Exp $
+# $Id: OpenSP.pm,v 1.26 2005/08/14 16:22:56 tbe Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -86,10 +86,6 @@ sub parse_string
     # create temp file, this would croak if it fails, so
     # there is no need for us to check the return value
     my $fh = File::Temp->new();
-
-    # Unlink (safely) tmpfile if we don't need the filename.
-    File::Temp::unlink0($fh, $fh->filename)
-        if $self->pass_file_descriptor;
 
     # store content
     print $fh $text;
