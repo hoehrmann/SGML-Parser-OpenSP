@@ -1,6 +1,6 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.7 2004/10/01 16:35:26 hoehrmann Exp $
+# $Id: Tools.pm,v 1.8 2005/08/16 15:30:22 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
@@ -88,6 +88,7 @@ sub split_message
     my $oent = shift; # show_open_entities
     my $errn = shift; # show_error_numbers
     my $oelm = shift; # show_open_elements
+    my $mess_debug = $mess;
     
     my %resu;
     
@@ -118,7 +119,7 @@ sub split_message
     
     # check for proper format, the first component must be
     # empty and each entry must have line, column and text
-    croak "Unexpected error message format"
+    croak "Unexpected error message format ($mess_debug)"
       if length $comp[0] or (@comp - 1) % 3;
     
     # remove empty component

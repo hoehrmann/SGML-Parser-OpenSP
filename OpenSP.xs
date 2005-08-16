@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.27 2005/08/14 18:07:19 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.28 2005/08/16 15:30:22 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -1173,8 +1173,8 @@ SgmlParserOpenSP::new()
     sv_bless(ST(0), gv_stashpv(CLASS, 1));
     hv_store((HV*)SvRV(ST(0)), "__o", 3, newSViv(PTR2IV(RETVAL)), 0);
   
-    os = get_sv("^O", 0);
-    pfd = os && !strEQ("MSWin32", SvPV_nolen(os)) ? 1 : 0;
+    os = get_sv("\017", 0);
+    pfd = (os && !strEQ("MSWin32", SvPV_nolen(os))) ? 1 : 0;
     hv_store((HV*)SvRV(ST(0)), "pass_file_descriptor", 20, newSViv(pfd), 0);
 
 void
