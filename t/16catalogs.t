@@ -1,6 +1,6 @@
 # 16catalogs.t -- ...
 #
-# $Id: 16catalogs.t,v 1.2 2004/10/08 18:08:02 hoehrmann Exp $
+# $Id: 16catalogs.t,v 1.3 2005/12/11 19:47:15 tbe Exp $
 
 use strict;
 use warnings;
@@ -43,7 +43,7 @@ sub TestHandler11::start_dtd
       
     # this might fail in case of conflicting catalogs :-(
     $s->{ok4}++ if exists $e->{GeneratedSystemId} and
-      $e->{GeneratedSystemId} =~ /^<OSFILE>/i;
+      $e->{GeneratedSystemId} =~ /^<OSFILE>| /i;
       
     $s->{ok5}++ if exists $d->{Name} and
       $d->{Name} eq "html";
