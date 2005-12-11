@@ -23,6 +23,8 @@ t/16catalogs.t
 t/17splitmessage.t
 t/18halt.t
 t/19refcounting.t
+t/98podsyn.t
+t/99podcov.t
 lib/SGML/Parser/OpenSP.pm
 lib/SGML/Parser/OpenSP/Tools.pm
 samples/no-doctype.xml

@@ -10,6 +10,8 @@ Revision history for Perl extension SGML::Parser::OpenSP.
 	- added parse_string and pass_file_descriptor option
 	- fixed a bug in handling warnings(qw/multiple args/)
 	- added more sanity checks to typemap
+	- added tests using Pod::Test, fixed found issues.
+	- added tests using Pod::Test::Coverage, fixed found issues.
 
 0.98  Sat Oct 02 01:19:04 2004
 	- added more split_message tests

@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.28 2005/08/16 03:31:36 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.29 2005/12/11 19:02:00 tbe Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -116,6 +116,38 @@ this module are event based. As the parser recognizes parts of the document
 (say the start or end of an element), then any handlers registered for that
 type of an event are called with suitable parameters.
 
+=head1 COMMON METHODS
+
+=over 4
+
+=item new()
+
+Returns a new SGML::Parser::OpenSP object. Takes no arguments.
+
+=item parse($file)
+
+Parses the file passed as an argument. Note that this must be a filename and
+not a filehandle. See L<PROCESSING FILES> below for details.
+
+=item parse_string($data)
+
+Parses the data passed as an argument. See L<PROCESSING FILES> below for details.
+
+=item halt()
+
+Halts processing before parsing the entire document. Takes no arguments.
+
+=item split_message()
+
+Splits OpenSP's error messages into their component parts.
+See L<POST-PROCESSING ERROR MESSAGES> below for details.
+
+=item get_location()
+
+See L<POSITIONING INFORMATION> below for details.
+
+=back
+
 =head1 CONFIGURATION
 
 =head2 BOOLEAN OPTIONS
@@ -126,7 +158,11 @@ type of an event are called with suitable parameters.
 
 Report events to the blessed reference $handler.
 
+=back
+
 =head2 ERROR MESSAGE FORMAT
+
+=over 4
 
 =item $p->show_open_entities([$bool])
 
@@ -143,7 +179,11 @@ The default is false.
 
 Show message numbers in error messages.
 
+=back
+
 =head2 GENERATED EVENTS
+
+=over 4
 
 =item $p->output_comment_decls([$bool])
 
@@ -158,7 +198,11 @@ C<marked_section_end>, C<ignored_chars>). The default is false.
 
 Generate C<general_entity> events. The default is false.
 
+=back
+
 =head2 IO SETTINGS
+
+=over 4
 
 =item $p->map_catalog_document([$bool])
 
@@ -205,7 +249,11 @@ to force use of the OSFILE storage manager, please report it as a bug
 and include the values of C<$^O>, C<$Config{archname}>, and a description
 of the platform (e.g. "Windows Vista Service Pack 42").
 
+=back
+
 =head2 PROCESSING OPTIONS
+
+=over 4
 
 =item $p->include_params([@include_params])
 
