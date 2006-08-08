@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.29 2005/12/11 19:02:00 tbe Exp $
+# $Id: OpenSP.pm,v 1.30 2006/08/08 17:33:18 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -663,7 +663,7 @@ with a hash reference
 The following events are defined:
 
   * appinfo
-  * pi
+  * processing_instruction
   * start_element
   * end_element
   * data
