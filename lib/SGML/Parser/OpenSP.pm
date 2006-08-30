@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.30 2006/08/08 17:33:18 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.31 2006/08/30 14:34:01 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -63,6 +63,9 @@ sub parse_string
     # create temp file, this would croak if it fails, so
     # there is no need for us to check the return value
     my $fh = File::Temp->new();
+
+    # set proper mode
+    binmode $fh, ':utf8';
 
     # store content
     print $fh $text;

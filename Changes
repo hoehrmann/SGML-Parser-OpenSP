@@ -5,6 +5,7 @@ Revision history for Perl extension SGML::Parser::OpenSP.
                 element names include ':'
 	- todo: UTF-8 flag magic for parse_string
 	- todo: enhanced parse_string to accept options
+	- fixed a bug in how parse_string handles encodings
 	- added parse_string tests
 	- added parse_string documentation
 	- added parse_string and pass_file_descriptor option
