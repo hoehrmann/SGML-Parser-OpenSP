@@ -1,6 +1,6 @@
 # Tools.pm -- SGML::Parser::OpenSP::Tools module
 #
-# $Id: Tools.pm,v 1.8 2005/08/16 15:30:22 hoehrmann Exp $
+# $Id: Tools.pm,v 1.9 2006/08/30 14:50:35 hoehrmann Exp $
 
 package SGML::Parser::OpenSP::Tools;
 use 5.008; 
@@ -349,7 +349,7 @@ by default. It returns C<undef> if there is no data to split.
 
 =head1 AUTHOR AND COPYRIGHT
 
-Copyright (c) 2004 Bjoern Hoehrmann E<lt>bjoern@hoehrmann.deE<gt>.
+Copyright (c) 2006 Bjoern Hoehrmann E<lt>bjoern@hoehrmann.deE<gt>.
 
 This module is licensed under the same terms as Perl itself.
 

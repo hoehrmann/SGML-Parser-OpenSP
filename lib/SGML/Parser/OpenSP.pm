@@ -1,6 +1,6 @@
 # OpenSP.pm -- SGML::Parser::OpenSP module
 #
-# $Id: OpenSP.pm,v 1.31 2006/08/30 14:34:01 hoehrmann Exp $
+# $Id: OpenSP.pm,v 1.32 2006/08/30 14:50:34 hoehrmann Exp $
 
 package SGML::Parser::OpenSP;
 use 5.008; 
@@ -971,7 +971,7 @@ for details.
   Terje Bless <link@cpan.org> wrote version 0.01.
   Bjoern Hoehrmann <bjoern@hoehrmann.de> wrote version 0.02.
 
-  Copyright (c) 2004 Bjoern Hoehrmann <bjoern@hoehrmann.de>.
+  Copyright (c) 2006 Bjoern Hoehrmann <bjoern@hoehrmann.de>.
   This module is licensed under the same terms as Perl itself.
 
 =cut
