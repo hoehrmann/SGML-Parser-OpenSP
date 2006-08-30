@@ -1,5 +1,11 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
+0.100  ...
+	- todo: test for split_message with open_elements and
+                element names include ':'
+	- todo: UTF-8 flag magic for parse_string
+	- todo: enhanced parse_string to accept options
+
 0.99  Wed Aug 30 17:00:00 2006
 	- fixed a bug in how parse_string handles encodings
 	- added parse_string tests
