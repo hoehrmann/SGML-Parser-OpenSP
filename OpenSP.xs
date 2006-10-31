@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.28 2005/08/16 15:30:22 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.29 2006/10/31 07:42:37 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -445,7 +445,7 @@ void SgmlParserOpenSP::_hv_fetch_pk_setOption(HV* hv, const char* key, const I32
     AV* av = (AV*)rv;
     I32 len = av_len(av);
 
-    for (I32 i = 0; i < len; ++i)
+    for (I32 i = 0; i <= len; ++i)
     {
         SV** svp = av_fetch(av, i, 0);
 
