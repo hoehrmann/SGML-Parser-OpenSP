@@ -6,7 +6,8 @@ Revision history for Perl extension SGML::Parser::OpenSP.
 	- todo: UTF-8 flag magic for parse_string
 	- todo: enhanced parse_string to accept options
 	- multi-arg options no longer have the last arg ignored
-
+	- http://rt.cpan.org/Ticket/Display.html?id=26791
+	  Added note to the README file about -dev packages.
 
 0.99  Wed Aug 30 17:00:00 2006
 	- fixed a bug in how parse_string handles encodings
