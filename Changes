@@ -1,5 +1,12 @@
 Revision history for Perl extension SGML::Parser::OpenSP.
 
+0.992  ...
+	- todo: make SP_WIDE_SYSTEM test compiler error
+	- todo: test for split_message with open_elements and
+                element names include ':'
+	- todo: UTF-8 flag magic for parse_string
+	- todo: enhanced parse_string to accept options
+
 0.991  Thu Dec  6 07:25:00 2007
 	- added 20passfd.t, 21parsestring.t, 22mwarnings.t
 	- multi-arg options no longer have the last arg ignored
