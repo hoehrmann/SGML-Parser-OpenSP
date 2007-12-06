@@ -1,6 +1,6 @@
 // OpenSP.xs -- OpenSP XS Wrapper
 //
-// $Id: OpenSP.xs,v 1.29 2006/10/31 07:42:37 hoehrmann Exp $
+// $Id: OpenSP.xs,v 1.30 2007/12/06 05:58:10 hoehrmann Exp $
 
 // workaround for broken math.h in VC++ 6.0
 #if defined(_MSC_VER) && _MSC_VER < 1300
@@ -21,9 +21,9 @@ extern "C"
 // these are specific to the system and might need to
 // be changed before the Perl extension can compile
 #ifdef WIN32
-#include "generic/ParserEventGeneratorKit.h"
+#include <generic/ParserEventGeneratorKit.h>
 #else
-#include "OpenSP/ParserEventGeneratorKit.h"
+#include <OpenSP/ParserEventGeneratorKit.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
