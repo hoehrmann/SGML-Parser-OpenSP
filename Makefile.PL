@@ -38,7 +38,7 @@ WriteMakefile(
 
     LICENSE           => 'perl',
     'dist'            => {
-      TARFLAGS	=> '--mode=600 --group=0 --owner=bjoern -cvf',
+      TARFLAGS	=> '--mode=600 --group=CPAN --owner=bjoern -cvf',
     },
 
     %options
