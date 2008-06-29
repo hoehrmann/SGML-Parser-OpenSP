@@ -36,5 +36,10 @@ WriteMakefile(
     INC               => '', # e.g., '-I/usr/include/other'
     XSOPT             => '-C++',
 
+    LICENSE           => 'perl',
+    'dist'            => {
+      TARFLAGS	=> '--mode=600 --group=0 --owner=bjoern -cvf',
+    },
+
     %options
 );

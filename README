@@ -1,5 +1,5 @@
-SGML-Parser-OpenSP version 0.992
-================================
+SGML-Parser-OpenSP
+==================
 
 This module provides an interface to the OpenSP SGML parser.
 
@@ -48,6 +48,6 @@ Note that you need the header files and link libraries included in
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2006 by Bjoern Hoehrmann <bjoern@hoehrmann.de>
+Copyright (c) 2006-2008 by Bjoern Hoehrmann <bjoern@hoehrmann.de>
 
 This module is licensed under the same terms as Perl itself.

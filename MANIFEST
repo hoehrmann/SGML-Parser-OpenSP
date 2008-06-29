@@ -34,3 +34,4 @@ samples/no-doctype.xml
 samples/test.soc
 samples/xml.dcl
 samples/xhtml1-strict-s.dtd
+eg/xhtml1val.pl
